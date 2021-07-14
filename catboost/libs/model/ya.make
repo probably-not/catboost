@@ -3,8 +3,8 @@ LIBRARY()
 
 
 SRCS(
-    GLOBAL cpu/formula_evaluator.cpp
-    GLOBAL model_import_interface.cpp
+    cpu/formula_evaluator.cpp
+    model_import_interface.cpp
     cpu/evaluator_impl.cpp
     cpu/quantization.cpp
     ctr_data.cpp
