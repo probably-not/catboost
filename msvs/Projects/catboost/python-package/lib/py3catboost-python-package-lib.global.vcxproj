@@ -57,18 +57,18 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <UseFullPaths>true</UseFullPaths>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ob0 /Od /D_DEBUG /MTd /Zi /FS /DFAKEID=5020880 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS /DSSE_ENABLED=1 /DSSE3_ENABLED=1 /DSSSE3_ENABLED=1 /DSSE41_ENABLED=1 /DSSE42_ENABLED=1 /DPOPCNT_ENABLED=1 /DCX16_ENABLED=1 -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /D__SSE2__=1 /D__SSE3__=1 /D__SSSE3__=1 /D__SSE4_1__=1 /D__SSE4_2__=1 /D__POPCNT__=1  -DUSE_PYTHON3 /std:c++latest /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ox /Ob2 /Oi /DNDEBUG /MT /Zi /FS /DFAKEID=5020880 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS /DSSE_ENABLED=1 /DSSE3_ENABLED=1 /DSSSE3_ENABLED=1 /DSSE41_ENABLED=1 /DSSE42_ENABLED=1 /DPOPCNT_ENABLED=1 /DCX16_ENABLED=1 -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /D__SSE2__=1 /D__SSE3__=1 /D__SSSE3__=1 /D__SSE4_1__=1 /D__SSE4_2__=1 /D__POPCNT__=1  -DUSE_PYTHON3 /std:c++latest /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ob0 /Od /D_DEBUG /MTd /Zi /FS /DFAKEID=8732495 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS /DSSE_ENABLED=1 /DSSE3_ENABLED=1 /DSSSE3_ENABLED=1 /DSSE41_ENABLED=1 /DSSE42_ENABLED=1 /DPOPCNT_ENABLED=1 /DCX16_ENABLED=1 -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /D__SSE2__=1 /D__SSE3__=1 /D__SSSE3__=1 /D__SSE4_1__=1 /D__SSE4_2__=1 /D__POPCNT__=1  -DUSE_PYTHON3 /std:c++latest /Zc:__cplusplus /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes  </AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ox /Ob2 /Oi /DNDEBUG /MT /Zi /FS /DFAKEID=8732495 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS /DSSE_ENABLED=1 /DSSE3_ENABLED=1 /DSSSE3_ENABLED=1 /DSSE41_ENABLED=1 /DSSE42_ENABLED=1 /DPOPCNT_ENABLED=1 /DCX16_ENABLED=1 -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /D__SSE2__=1 /D__SSE3__=1 /D__SSSE3__=1 /D__SSE4_1__=1 /D__SSE4_2__=1 /D__POPCNT__=1  -DUSE_PYTHON3 /std:c++latest /Zc:__cplusplus /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes  </AdditionalOptions>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
       <RemoveUnreferencedCodeData Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"/>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
       <RemoveUnreferencedCodeData Condition="'$(Configuration)|$(Platform)'=='Release|x64'"/>
-      <AdditionalIncludeDirectories>;$(SolutionDir)$(Configuration);$(SolutionDir)..;$(SolutionDir)../contrib/libs/python/Include;$(SolutionDir)../contrib/libs/cxxsupp/libcxx/include;$(SolutionDir)../contrib/libs/zlib/include;$(SolutionDir)../contrib/libs/double-conversion/include;$(SolutionDir)../contrib/libs/libc_compat/include/windows;$(SolutionDir)../contrib/libs/python/Include;$(SolutionDir)../contrib/libs/openssl/include;$(SolutionDir)../contrib/libs/xz/liblzma/api;$(SolutionDir)../contrib/restricted/libffi/include;$(SolutionDir)../contrib/restricted/libffi/configs/x86_64-microsoft-windows/include;$(SolutionDir)../contrib/libs/tbb/include;$(SolutionDir)../contrib/libs/libf2c;$(SolutionDir)../contrib/libs/protobuf/src;$(SolutionDir)../contrib/libs/brotli/include;$(SolutionDir)../contrib/libs/snappy/include;$(SolutionDir)../contrib/python/numpy/include/numpy/core/include;$(SolutionDir)../contrib/python/numpy/include/numpy/core/include/numpy;$(SolutionDir)../contrib/python/numpy/include/numpy/f2py/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>;$(SolutionDir)$(Configuration);$(SolutionDir)..;$(SolutionDir)../contrib/libs/python/Include;$(SolutionDir)../contrib/libs/cxxsupp/libcxx/include;$(SolutionDir)../contrib/libs/zlib/include;$(SolutionDir)../contrib/libs/double-conversion/include;$(SolutionDir)../contrib/libs/libc_compat/include/windows;$(SolutionDir)../contrib/libs/python/Include;$(SolutionDir)../contrib/libs/openssl/include;$(SolutionDir)../contrib/libs/xz/liblzma/api;$(SolutionDir)../contrib/restricted/libffi/include;$(SolutionDir)../contrib/restricted/libffi/configs/x86_64-microsoft-windows/include;$(SolutionDir)../contrib/libs/tbb/include;$(SolutionDir)../contrib/libs/libf2c;$(SolutionDir)../contrib/libs/protobuf/src;$(SolutionDir)../contrib/libs/nvidia/cub;$(SolutionDir)../contrib/libs/nvidia/thrust;$(SolutionDir)../contrib/libs/brotli/include;$(SolutionDir)../contrib/libs/snappy/include;$(SolutionDir)../contrib/python/numpy/include/numpy/core/include;$(SolutionDir)../contrib/python/numpy/include/numpy/core/include/numpy;$(SolutionDir)../contrib/python/numpy/include/numpy/f2py/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>advapi32.lib;comdlg32.lib;crypt32.lib;dnsapi.lib;gdi32.lib;iphlpapi.lib;kernel32.lib;mswsock.lib;ole32.lib;oleaut32.lib;psapi.lib;rpcrt4.lib;secur32.lib;shell32.lib;shlwapi.lib;user32.lib;userenv.lib;uuid.lib;version.lib;winmm.lib;winspool.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudart_static.lib</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudart_static.lib</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudadevrt.lib cudart_static.lib</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudadevrt.lib cudart_static.lib</AdditionalOptions>
       <SubSystem Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Console</SubSystem>
       <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DebugFastLink</GenerateDebugInformation>
       <RandomizedBaseAddress Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</RandomizedBaseAddress>
@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)$(Configuration)\catboost\python-package\lib\8ff3db7fc4e360453de5c22369.cpp"/>
     <ClCompile Include="$(SolutionDir)$(Configuration)\catboost\python-package\lib\catboost._catboost.reg3.cpp"/>
+    <ClCompile Include="$(SolutionDir)$(Configuration)\catboost\python-package\lib\f1082ea7be354375fb9e55bba6.cpp"/>
     <ClCompile Include="$(SolutionDir)$(Configuration)\catboost\python-package\lib\join_ddf2ce4a64557050bbc6b4bd51.cpp"/>
     <CustomBuild Include="$(SolutionDir)$(Configuration)\catboost\python-package\lib\join_47110edc44861a0e10cec8cdd0.yasm">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -130,6 +131,10 @@ cd /d $(SolutionDir)$(Configuration)\catboost\python-package\lib
 if %errorlevel% neq 0 goto :cmEnd
 "$(SolutionDir)$(Configuration)/tools/rorescompiler/rorescompiler.exe" "$(SolutionDir)$(Configuration)/catboost/python-package/lib/a8b1423153d7d4d7ee6ab4ded4.cpp" "_5ccd179c2389742b69a4cd1f6d=resfs/src/resfs/file/py/catboost/__init__.py" "_f36f1adf498a39538418f334ea=resfs/file/py/catboost/__init__.py" "_c1c580f7db30853a7dc3c165b6=resfs/src/resfs/file/py/catboost/__init__.py.yapyc3" "_df20fc578c59889e866a17b3bd=resfs/file/py/catboost/__init__.py.yapyc3" "_e735c4820918cf88be51f95373=resfs/src/resfs/file/py/catboost/version.py" "_73d692c565f89f2e26183290ec=resfs/file/py/catboost/version.py" "_73016cbd17e9bf366d9a1cecdc=resfs/src/resfs/file/py/catboost/version.py.yapyc3" "_6c0fba3d803e1b9ba277c43472=resfs/file/py/catboost/version.py.yapyc3" "_e18093d34abe579c9f9895fb5f=resfs/src/resfs/file/py/catboost/core.py" "_58a04087841526283da2b808cb=resfs/file/py/catboost/core.py" "_3a1083f0d0db5762dfb332ba2b=resfs/src/resfs/file/py/catboost/core.py.yapyc3" "_a857f20acdc58aed47c25e991b=resfs/file/py/catboost/core.py.yapyc3" "_8857ef01b027f7bfd7911b9e6b=resfs/src/resfs/file/py/catboost/datasets.py" "_15f2613c6046d24b512ba751f6=resfs/file/py/catboost/datasets.py" "_0f06f49c8af6f7fa30253ca34b=resfs/src/resfs/file/py/catboost/datasets.py.yapyc3" "_23405bebdf312ab5ab9808a8ab=resfs/file/py/catboost/datasets.py.yapyc3" "_bcdd91ba94118509f30a283f99=resfs/src/resfs/file/py/catboost/plot_helpers.py" "_3dba2e23c69b13aa6b6b228bde=resfs/file/py/catboost/plot_helpers.py" "_0c95217c95bc4bfee96c1515fa=resfs/src/resfs/file/py/catboost/plot_helpers.py.yapyc3" "_fc006cf341f45db9b5b079dc63=resfs/file/py/catboost/plot_helpers.py.yapyc3" "_37e1503c10418016b0585fb87d=resfs/src/resfs/file/py/catboost/metrics.py" "_3da29ff083983d9adc4d6fb388=resfs/file/py/catboost/metrics.py" "_e8be70b2f6f213e844ab3b6f75=resfs/src/resfs/file/py/catboost/metrics.py.yapyc3" "_afb2e5dc49c7a713d1e8790580=resfs/file/py/catboost/metrics.py.yapyc3" "_933632b1a5e0cb22c2d4eaeb28=resfs/src/resfs/file/py/catboost/monoforest.py" "_fdefcc2466e39fb3c8f0da4f0a=resfs/file/py/catboost/monoforest.py" "_cc286f49d31c3411de7b859211=resfs/src/resfs/file/py/catboost/monoforest.py.yapyc3" "_b596b2ec910c46ac61d1d3043b=resfs/file/py/catboost/monoforest.py.yapyc3" "_ee9d4ab33891179ae6bed5c4cd=resfs/src/resfs/file/py/catboost/text_processing.py"
 if %errorlevel% neq 0 goto :cmEnd
+cd /d $(SolutionDir)$(Configuration)\catboost\python-package\lib
+if %errorlevel% neq 0 goto :cmEnd
+"$(SolutionDir)$(Configuration)/tools/rorescompiler/rorescompiler.exe" "$(SolutionDir)$(Configuration)/catboost/python-package/lib/f1082ea7be354375fb9e55bba6.cpp" "_4daad3072b86b32d4d87342910=py/namespace/adbf69308a7b4faf119ba094b4b535fc/catboost/python-package/catboost"
+if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 :cmErrorLevel
@@ -157,15 +162,19 @@ cd /d $(SolutionDir)$(Configuration)\catboost\python-package\lib
 if %errorlevel% neq 0 goto :cmEnd
 "$(SolutionDir)$(Configuration)/tools/rorescompiler/rorescompiler.exe" "$(SolutionDir)$(Configuration)/catboost/python-package/lib/a8b1423153d7d4d7ee6ab4ded4.cpp" "_5ccd179c2389742b69a4cd1f6d=resfs/src/resfs/file/py/catboost/__init__.py" "_f36f1adf498a39538418f334ea=resfs/file/py/catboost/__init__.py" "_c1c580f7db30853a7dc3c165b6=resfs/src/resfs/file/py/catboost/__init__.py.yapyc3" "_df20fc578c59889e866a17b3bd=resfs/file/py/catboost/__init__.py.yapyc3" "_e735c4820918cf88be51f95373=resfs/src/resfs/file/py/catboost/version.py" "_73d692c565f89f2e26183290ec=resfs/file/py/catboost/version.py" "_73016cbd17e9bf366d9a1cecdc=resfs/src/resfs/file/py/catboost/version.py.yapyc3" "_6c0fba3d803e1b9ba277c43472=resfs/file/py/catboost/version.py.yapyc3" "_e18093d34abe579c9f9895fb5f=resfs/src/resfs/file/py/catboost/core.py" "_58a04087841526283da2b808cb=resfs/file/py/catboost/core.py" "_3a1083f0d0db5762dfb332ba2b=resfs/src/resfs/file/py/catboost/core.py.yapyc3" "_a857f20acdc58aed47c25e991b=resfs/file/py/catboost/core.py.yapyc3" "_8857ef01b027f7bfd7911b9e6b=resfs/src/resfs/file/py/catboost/datasets.py" "_15f2613c6046d24b512ba751f6=resfs/file/py/catboost/datasets.py" "_0f06f49c8af6f7fa30253ca34b=resfs/src/resfs/file/py/catboost/datasets.py.yapyc3" "_23405bebdf312ab5ab9808a8ab=resfs/file/py/catboost/datasets.py.yapyc3" "_bcdd91ba94118509f30a283f99=resfs/src/resfs/file/py/catboost/plot_helpers.py" "_3dba2e23c69b13aa6b6b228bde=resfs/file/py/catboost/plot_helpers.py" "_0c95217c95bc4bfee96c1515fa=resfs/src/resfs/file/py/catboost/plot_helpers.py.yapyc3" "_fc006cf341f45db9b5b079dc63=resfs/file/py/catboost/plot_helpers.py.yapyc3" "_37e1503c10418016b0585fb87d=resfs/src/resfs/file/py/catboost/metrics.py" "_3da29ff083983d9adc4d6fb388=resfs/file/py/catboost/metrics.py" "_e8be70b2f6f213e844ab3b6f75=resfs/src/resfs/file/py/catboost/metrics.py.yapyc3" "_afb2e5dc49c7a713d1e8790580=resfs/file/py/catboost/metrics.py.yapyc3" "_933632b1a5e0cb22c2d4eaeb28=resfs/src/resfs/file/py/catboost/monoforest.py" "_fdefcc2466e39fb3c8f0da4f0a=resfs/file/py/catboost/monoforest.py" "_cc286f49d31c3411de7b859211=resfs/src/resfs/file/py/catboost/monoforest.py.yapyc3" "_b596b2ec910c46ac61d1d3043b=resfs/file/py/catboost/monoforest.py.yapyc3" "_ee9d4ab33891179ae6bed5c4cd=resfs/src/resfs/file/py/catboost/text_processing.py"
 if %errorlevel% neq 0 goto :cmEnd
+cd /d $(SolutionDir)$(Configuration)\catboost\python-package\lib
+if %errorlevel% neq 0 goto :cmEnd
+"$(SolutionDir)$(Configuration)/tools/rorescompiler/rorescompiler.exe" "$(SolutionDir)$(Configuration)/catboost/python-package/lib/f1082ea7be354375fb9e55bba6.cpp" "_4daad3072b86b32d4d87342910=py/namespace/adbf69308a7b4faf119ba094b4b535fc/catboost/python-package/catboost"
+if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 :cmErrorLevel
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <Message>$B/catboost/python-package/lib/0208d41938ca0cf755fa0c89fa.cpp	$B/catboost/python-package/lib/32a60c6eca1da7fdefb345255a.cpp	$B/catboost/python-package/lib/655a28f6d4f7ccc0f0ac9ed191.cpp	$B/catboost/python-package/lib/8ff3db7fc4e360453de5c22369.cpp	$B/catboost/python-package/lib/a8b1423153d7d4d7ee6ab4ded4.cpp	</Message>
+      <Message>$B/catboost/python-package/lib/0208d41938ca0cf755fa0c89fa.cpp	$B/catboost/python-package/lib/32a60c6eca1da7fdefb345255a.cpp	$B/catboost/python-package/lib/655a28f6d4f7ccc0f0ac9ed191.cpp	$B/catboost/python-package/lib/8ff3db7fc4e360453de5c22369.cpp	$B/catboost/python-package/lib/a8b1423153d7d4d7ee6ab4ded4.cpp	$B/catboost/python-package/lib/f1082ea7be354375fb9e55bba6.cpp	</Message>
       <AdditionalInputs>$(SolutionDir)$(Configuration)\tools\rorescompiler\rorescompiler.exe;</AdditionalInputs>
-      <Outputs>$(SolutionDir)$(Configuration)\catboost\python-package\lib\0208d41938ca0cf755fa0c89fa.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\32a60c6eca1da7fdefb345255a.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\655a28f6d4f7ccc0f0ac9ed191.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\8ff3db7fc4e360453de5c22369.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\a8b1423153d7d4d7ee6ab4ded4.cpp;</Outputs>
+      <Outputs>$(SolutionDir)$(Configuration)\catboost\python-package\lib\0208d41938ca0cf755fa0c89fa.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\32a60c6eca1da7fdefb345255a.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\655a28f6d4f7ccc0f0ac9ed191.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\8ff3db7fc4e360453de5c22369.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\a8b1423153d7d4d7ee6ab4ded4.cpp;$(SolutionDir)$(Configuration)\catboost\python-package\lib\f1082ea7be354375fb9e55bba6.cpp;</Outputs>
     </CustomBuild>
     <CustomBuild Include="$(SolutionDir)..\build\scripts\fs_tools.py">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -1063,6 +1072,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\catboost\libs\helpers\catboost-libs-helpers.vcxproj">
       <Project>{1ED2E5C8-4D20-BC86-8EEB-C69117E1D3FA}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\catboost\libs\helpers\flatbuffers\libs-helpers-flatbuffers.vcxproj">
+      <Project>{EC63A982-A3AC-CD58-0813-FF9DC10C9825}</Project>
+    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\catboost\libs\helpers\parallel_sort\libs-helpers-parallel_sort.vcxproj">
       <Project>{3D8525D8-C5BE-2847-94DF-23F1896F6BA1}</Project>
     </ProjectReference>
@@ -1225,9 +1237,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\crcutil\contrib-libs-crcutil.vcxproj">
       <Project>{1EE751F2-33FA-3640-4C59-F20313BE143E}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\cub\contrib-libs-cub.vcxproj">
-      <Project>{E6D0934F-A141-5DB0-60FA-6BD719540061}</Project>
-    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\cxxsupp\contrib-libs-cxxsupp.vcxproj">
       <Project>{8D7C41B0-2344-C558-29D8-570B39498A2F}</Project>
     </ProjectReference>
@@ -1272,6 +1281,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\nayuki_md5\contrib-libs-nayuki_md5.vcxproj">
       <Project>{C0251DC8-E401-B1AF-785F-72D686693CB9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\nvidia\cub\libs-nvidia-cub.vcxproj">
+      <Project>{B1B146A3-CFD6-0035-F05E-D7DACD90FFAF}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\onnx\contrib-libs-onnx.vcxproj">
       <Project>{BA51C351-CD64-A60B-C4C2-2794FC71EE24}</Project>
@@ -1324,8 +1336,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\zstd06\contrib-libs-zstd06.vcxproj">
       <Project>{149CAE2F-67B1-E007-9F05-67247453CE03}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\Jinja2\py3Jinja2.vcxproj">
-      <Project>{ABE69C03-D8AA-46E8-A10F-942CBD86C860}</Project>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\Jinja2\py3\pypython-Jinja2-py3.vcxproj">
+      <Project>{3D4B481E-2985-E2CB-DB77-D5D8985A9A73}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\Jinja2\py3contrib-python-Jinja2.vcxproj">
+      <Project>{7B02C64E-9C71-F289-7191-EBB8E5746133}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\MarkupSafe\py3\pypython-MarkupSafe-py3.vcxproj">
       <Project>{FC9A76DB-4BF2-BCBF-BF48-AD3E3AF6EC57}</Project>
@@ -1333,8 +1348,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\MarkupSafe\py3contrib-python-MarkupSafe.vcxproj">
       <Project>{0AF8F6ED-AFD8-CA23-BD1D-2D750C053CF0}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\dateutil\py3dateutil.vcxproj">
-      <Project>{4F62D972-C51F-BBC3-4B6A-266C6674E907}</Project>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\dateutil\py3contrib-python-dateutil.vcxproj">
+      <Project>{D274033C-8742-EABF-10AB-335A323CB8E0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\graphviz\py3\pypython-graphviz-py3.vcxproj">
+      <Project>{36BED28F-165D-7F2F-F290-96288A3E77C6}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\graphviz\py3contrib-python-graphviz.vcxproj">
       <Project>{330DC72E-A843-8BC7-F0CD-1868368EA271}</Project>
@@ -1594,6 +1612,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\coroutine\listener\cpp-coroutine-listener.vcxproj">
       <Project>{C43D7284-E485-A23F-D1EB-E5104D32806A}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\cuda\exception\cpp-cuda-exception.vcxproj">
+      <Project>{4485FA18-F2CA-4E61-F357-3E8F126F57AE}</Project>
+    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\cuda\wrappers\cpp-cuda-wrappers.vcxproj">
       <Project>{9935B7C4-C890-9840-0263-8F903791A80D}</Project>
     </ProjectReference>
@@ -1762,6 +1783,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\svnversion\library-cpp-svnversion.vcxproj">
       <Project>{C3083C9F-6349-B5A2-3DD0-2098D66566DB}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\testing\common\cpp-testing-common.vcxproj">
+      <Project>{68BC6E30-C1B2-55F8-2F66-99AE7F9777EC}</Project>
+    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\text_processing\app_helpers\cpp-text_processing-app_helpers.vcxproj">
       <Project>{09B40915-9FA4-8249-87CD-4535A90064D1}</Project>
     </ProjectReference>
@@ -1809,6 +1833,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yson\library-cpp-yson.vcxproj">
       <Project>{D05A14C5-BA93-7AA3-1AB8-E62B001110D1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\ytalloc\core\cpp-ytalloc-core.vcxproj">
+      <Project>{48CA1C7E-9FF3-8299-9D74-DB9A77F55630}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\python\resource\py3library-python-resource.vcxproj">
       <Project>{56BE61DD-902F-46E5-A0C0-F54A78D0B209}</Project>

@@ -177,6 +177,9 @@ def validate_test(unit, kw):
     sb_tags = [tag for tag in tags if tag.startswith('sb:')]
 
     if is_fat:
+        if size != consts.TestSize.Large:
+            errors.append("Only LARGE test may have ya:fat tag")
+
         if in_autocheck and not is_force_sandbox:
             if invalid_requirements_for_distbuild:
                 errors.append("'{}' REQUIREMENTS options can be used only for FAT tests without ya:force_distbuild tag. Remove TAG(ya:force_distbuild) or an option.".format(invalid_requirements_for_distbuild))
@@ -184,8 +187,6 @@ def validate_test(unit, kw):
                 errors.append("You can set sandbox tags '{}' only for FAT tests without ya:force_distbuild. Remove TAG(ya:force_sandbox) or sandbox tags.".format(sb_tags))
             if 'ya:sandbox_coverage' in tags:
                 errors.append("You can set 'ya:sandbox_coverage' tag only for FAT tests without ya:force_distbuild.")
-            if size != consts.TestSize.Large:
-                errors.append("Only LARGE test may have ya:fat tag")
     else:
         if is_force_sandbox:
             errors.append('ya:force_sandbox can be used with LARGE tests only')
@@ -375,7 +376,7 @@ def onadd_ytest(unit, *args):
         # Current ymake implementation doesn't allow to call macro inside the 'when' body
         # that's why we add ADD_YTEST(coverage.extractor) to every PROGRAM entry and check requirements later
         return
-    elif flat_args[1] == "clang_tidy" and not unit.get("TIDY") == "yes":
+    elif flat_args[1] == "clang_tidy" and unit.get("TIDY") != "yes":
         # Graph is not prepared
         return
     elif flat_args[1] == "no.test":
@@ -383,7 +384,10 @@ def onadd_ytest(unit, *args):
 
     if flat_args[1] != "clang_tidy" and unit.get("TIDY") == "yes":
         # graph changed for clang_tidy tests
-        return
+        if flat_args[1] in ("unittest.py", "gunittest", "g_benchmark"):
+            flat_args[1] = "clang_tidy"
+        else:
+            return
 
     fork_mode = []
     if 'FORK_SUBTESTS' in spec_args:
@@ -451,16 +455,24 @@ def java_srcdirs_to_data(unit, var):
     for srcdir in (unit.get(var) or '').replace('$' + var, '').split():
         if srcdir == '.':
             srcdir = unit.get('MODDIR')
+        if srcdir.startswith('${ARCADIA_ROOT}/') or srcdir.startswith('$ARCADIA_ROOT/'):
+            srcdir = srcdir.replace('${ARCADIA_ROOT}/', '$S/')
+            srcdir = srcdir.replace('$ARCADIA_ROOT/', '$S/')
+        if srcdir.startswith('${CURDIR}/') or srcdir.startswith('$CURDIR/'):
+            srcdir = srcdir.replace('${CURDIR}/', os.path.join('$S', unit.get('MODDIR')))
+            srcdir = srcdir.replace('$CURDIR/', os.path.join('$S', unit.get('MODDIR')))
         srcdir = unit.resolve_arc_path(srcdir)
         if not srcdir.startswith('$'):
             srcdir = os.path.join('$S', unit.get('MODDIR'), srcdir)
-        if not srcdir.startswith('$S'):
-            continue
-        extra_data.append(srcdir.replace('$S', 'arcadia'))
+        if srcdir.startswith('$S'):
+            extra_data.append(srcdir.replace('$S', 'arcadia'))
     return serialize_list(extra_data)
 
 
 def onadd_check(unit, *args):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
     flat_args, spec_args = _common.sort_by_keywords({"DEPENDS": -1, "TIMEOUT": 1, "DATA": -1, "TAG": -1, "REQUIREMENTS": -1, "FORK_MODE": 1,
                                                      "SPLIT_FACTOR": 1, "FORK_SUBTESTS": 0, "FORK_TESTS": 0, "SIZE": 1}, args)
     check_type = flat_args[0]
@@ -469,6 +481,7 @@ def onadd_check(unit, *args):
     test_timeout = ''
     fork_mode = ''
     extra_test_data = ''
+    extra_test_dart_data = {}
     ymake_java_test = unit.get('YMAKE_JAVA_TEST') == 'yes'
 
     if check_type in ["flake8.py2", "flake8.py3"]:
@@ -496,6 +509,7 @@ def onadd_check(unit, *args):
         fork_mode = unit.get('TEST_FORK_MODE') or ''
         if ymake_java_test:
             extra_test_data = java_srcdirs_to_data(unit, 'ALL_SRCDIRS')
+        extra_test_dart_data['JDK_RESOURCE'] = 'JDK' + (unit.get('JDK_VERSION') or '_DEFAULT')
     elif check_type == "gofmt":
         script_rel_path = check_type
         go_files = flat_args[1:]
@@ -505,7 +519,24 @@ def onadd_check(unit, *args):
         script_rel_path = check_type
 
     use_arcadia_python = unit.get('USE_ARCADIA_PYTHON')
-    test_files = serialize_list(flat_args[1:])
+
+    if check_type == "check.data":
+        if unit.get("VALIDATE_DATA") == "no":
+            return
+        data_re = re.compile(r"sbr:/?/?(\d+)=?.*")
+        data = flat_args[1:]
+        resources = []
+        for f in data:
+            matched = re.match(data_re, f)
+            if matched:
+                resources.append(matched.group(1))
+        if resources:
+            test_files = serialize_list(resources)
+        else:
+            return
+    else:
+        test_files = serialize_list(flat_args[1:])
+
     test_record = {
         'TEST-NAME': check_type.lower(),
         'TEST-TIMEOUT': test_timeout,
@@ -529,6 +560,7 @@ def onadd_check(unit, *args):
         'TEST-FILES': test_files,
         'NO_JBUILD': 'yes' if ymake_java_test else 'no',
     }
+    test_record.update(extra_test_dart_data)
 
     data = dump_test(unit, test_record)
     if data:
@@ -543,6 +575,9 @@ def on_register_no_check_imports(unit):
 
 
 def onadd_check_py_imports(unit, *args):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
     if unit.get('NO_CHECK_IMPORTS_FOR_VALUE').strip() == "":
         return
     unit.onpeerdir(['library/python/testing/import_test'])
@@ -584,9 +619,13 @@ def onadd_check_py_imports(unit, *args):
 
 
 def onadd_pytest_script(unit, *args):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
     unit.set(["PYTEST_BIN", "no"])
     custom_deps = get_values_list(unit, 'TEST_DEPENDS_VALUE')
     timeout = filter(None, [unit.get(["TEST_TIMEOUT"])])
+
     if timeout:
         timeout = timeout[0]
     else:
@@ -609,6 +648,9 @@ def onadd_pytest_script(unit, *args):
 
 
 def onadd_pytest_bin(unit, *args):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
     flat, kws = _common.sort_by_keywords({'RUNNER_BIN': 1}, args)
     if flat:
         ymake.report_configure_error(
@@ -623,6 +665,9 @@ def onadd_pytest_bin(unit, *args):
 
 
 def add_test_to_dart(unit, test_type, binary_path=None, runner_bin=None):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
     custom_deps = get_values_list(unit, 'TEST_DEPENDS_VALUE')
     timeout = filter(None, [unit.get(["TEST_TIMEOUT"])])
     if timeout:
@@ -671,6 +716,10 @@ def extract_java_system_properties(unit, args):
 
 
 def onjava_test(unit, *args):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
+
     assert unit.get('MODULE_TYPE') is not None
 
     if unit.get('MODULE_TYPE') == 'JTEST_FOR':
@@ -736,7 +785,9 @@ def onjava_test(unit, *args):
         'TEST-CWD': test_cwd,
         'SKIP_TEST': unit.get('SKIP_TEST_VALUE') or '',
         'JAVA_CLASSPATH_CMD_TYPE': java_cp_arg_type,
-        'NO_JBUILD': 'yes' if ymake_java_test else 'no'
+        'NO_JBUILD': 'yes' if ymake_java_test else 'no',
+        'JDK_RESOURCE': 'JDK' + (unit.get('JDK_VERSION') or '_DEFAULT'),
+        'JDK_FOR_TESTS': 'JDK' + (unit.get('JDK_VERSION') or '_DEFAULT') + '_FOR_TESTS',
     }
     test_classpath_origins = unit.get('TEST_CLASSPATH_VALUE')
     if test_classpath_origins:
@@ -756,6 +807,10 @@ def onjava_test(unit, *args):
 
 
 def onjava_test_deps(unit, *args):
+    if unit.get("TIDY") == "yes":
+        # graph changed for clang_tidy tests
+        return
+
     assert unit.get('MODULE_TYPE') is not None
     assert len(args) == 1
     mode = args[0]
@@ -789,7 +844,7 @@ def onjava_test_deps(unit, *args):
         test_record['STRICT_CLASSPATH_CLASH'] = 'yes'
 
     if ymake_java_test:
-        test_record['CLASSPATH'] = '${DART_CLASSPATH}'
+        test_record['CLASSPATH'] = '$B/{}/{}.jar ${{DART_CLASSPATH}}'.format(unit.get('MODDIR'), unit.get('REALPRJNAME'))
 
     data = dump_test(unit, test_record)
     unit.set_property(['DART_DATA', data])

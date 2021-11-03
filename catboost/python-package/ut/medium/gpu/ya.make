@@ -41,15 +41,16 @@ DATA(
 
 DEPENDS(
     catboost/tools/limited_precision_dsv_diff
+    catboost/tools/limited_precision_numpy_diff
     catboost/tools/model_comparator
     catboost/python-package/catboost
     catboost/python-package/ut/medium/python_binary
 )
 
-IF (ARCH_AARCH64 OR OS_WINDOWS)
-    ALLOCATOR(J)
+IF (OS_LINUX AND NOT ARCH_AARCH64)
+    ALLOCATOR(TCMALLOC_256K)
 ELSE()
-    ALLOCATOR(LF)
+    ALLOCATOR(J)
 ENDIF()
 
 END()

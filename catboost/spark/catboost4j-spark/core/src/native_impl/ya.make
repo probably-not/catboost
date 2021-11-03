@@ -22,6 +22,7 @@ SRCS(
     quantization.cpp
     GLOBAL spark_quantized.cpp
     string.cpp
+    target.cpp
     native_impl.swg
     quantized_pool_serialization.cpp
     vector_output.cpp
@@ -34,6 +35,8 @@ PEERDIR(
     library/cpp/dbg_output
     library/cpp/grid_creator
     library/cpp/json
+    library/cpp/par
+    library/cpp/threading/atomic
     library/cpp/threading/local_executor
     catboost/libs/cat_feature
     catboost/libs/column_description
@@ -48,14 +51,15 @@ PEERDIR(
     catboost/private/libs/data_util
     catboost/private/libs/data_types
     catboost/private/libs/distributed
+    catboost/private/libs/labels
     catboost/private/libs/options
     catboost/private/libs/quantized_pool
 )
 
-IF (ARCH_AARCH64 OR OS_WINDOWS)
+IF (OS_WINDOWS)
     ALLOCATOR(J)
 ELSE()
-    ALLOCATOR(LF)
+    ALLOCATOR(MIM)
 ENDIF()
 
 STRIP()

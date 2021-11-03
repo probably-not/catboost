@@ -42,12 +42,13 @@ struct TTargetStatsForCtrs {
 TCtrHelper GetCtrHelper(
     const NCatboostOptions::TCatBoostOptions& catBoostOptions,
     const NCB::TFeaturesLayout& layout,
-    TConstArrayRef<float> learnTarget // can be empty if there's no target data
+    const TVector<float>& preprocessedLearnTarget,
+    const TVector<i8>& serializedLabelConverter
 ) throw (yexception);
 
 TTargetStatsForCtrs ComputeTargetStatsForCtrs(
     const TCtrHelper& ctrHelper,
-    TConstArrayRef<float> learnTarget,  // can be empty if there's no target data
+    const TVector<float>& preprocessedLearnTarget,
     NPar::TLocalExecutor* localExecutor
 ) throw (yexception);
 
@@ -71,7 +72,7 @@ public:
         TFullModel* modelWithoutCtrData, // moved into
         const NCatboostOptions::TCatBoostOptions* catBoostOptions,
         const NCB::TQuantizedFeaturesInfo& quantizedFeaturesInfo,
-        TConstArrayRef<float> learnTarget,
+        TVector<float>* preprocessedLearnTarget,  // moved into, can be empty if there's no target data
         TTargetStatsForCtrs* targetStatsForCtrs, // moved into
         const TCtrHelper& ctrHelper,
         NPar::TLocalExecutor* localExecutor
@@ -90,6 +91,7 @@ public:
 private:
     TFullModel Model;
     NCB::TFeaturesLayoutPtr FeaturesLayout;
+    TVector<float> PreprocessedLearnTarget;
     TTargetStatsForCtrs TargetStatsForCtrs;
     NPar::TLocalExecutor* LocalExecutor;
     TTempFile CtrDataFile;
@@ -98,6 +100,13 @@ private:
     THashMap<i32, TVector<TModelCtrBase>> CatFeatureFlatIndexToModelCtrsBases;
     TDatasetDataForFinalCtrs DatasetDataForFinalCtrs;
     NCB::TFeaturesArraySubsetIndexing LearnFeaturesSubsetIndexing;
+
+    // universal because it is the same for all cat features in Spark now
+    TVector<ui32> UniversalPerfectHashedToHashedCatValuesMap;
+
+    /* used as a buffer to temporary borrow from UniversalPerfectHashedToHashedCatValuesMap
+       for the needed feature
+     */
     NCB::TPerfectHashedToHashedCatValuesMap PerfectHashedToHashedCatValuesMap;
 
     const NCatboostOptions::TCatBoostOptions* CatBoostOptions;

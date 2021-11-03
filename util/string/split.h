@@ -680,8 +680,7 @@ namespace NStringSplitPrivate {
             return B;
         }
 
-        Y_PURE_FUNCTION
-        bool Empty() const noexcept {
+        Y_PURE_FUNCTION bool Empty() const noexcept {
             return TokenStart() == TokenDelim();
         }
 
@@ -796,8 +795,7 @@ namespace NStringSplitPrivate {
                     }
                     ++it;
                 }
-            },
-                        args...);
+            }, args...);
 
             return successfullyFilled == sizeof...(args) && it == this->end();
         }

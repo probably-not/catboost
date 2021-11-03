@@ -57,6 +57,7 @@ is_classification_objective = _catboost.is_classification_objective
 is_cv_stratified_objective = _catboost.is_cv_stratified_objective
 is_regression_objective = _catboost.is_regression_objective
 is_multiregression_objective = _catboost.is_multiregression_objective
+is_multitarget_objective = _catboost.is_multitarget_objective
 is_survivalregression_objective = _catboost.is_survivalregression_objective
 is_groupwise_metric = _catboost.is_groupwise_metric
 is_ranking_metric = _catboost.is_ranking_metric
@@ -67,8 +68,10 @@ _NumpyAwareEncoder = _catboost._NumpyAwareEncoder
 FeaturesData = _catboost.FeaturesData
 _have_equal_features = _catboost._have_equal_features
 SPARSE_MATRIX_TYPES = _catboost.SPARSE_MATRIX_TYPES
-MultiRegressionCustomMetric = _catboost.MultiRegressionCustomMetric
-MultiRegressionCustomObjective = _catboost.MultiRegressionCustomObjective
+MultiTargetCustomMetric = _catboost.MultiTargetCustomMetric
+MultiTargetCustomObjective = _catboost.MultiTargetCustomObjective
+MultiRegressionCustomMetric = _catboost.MultiTargetCustomMetric  # for compatibility
+MultiRegressionCustomObjective = _catboost.MultiTargetCustomObjective  # for compatibility
 fspath = _catboost.fspath
 _eval_metric_util = _catboost._eval_metric_util
 
@@ -442,6 +445,7 @@ class Pool(_PoolBase):
         subgroup_id=None,
         pairs_weight=None,
         baseline=None,
+        timestamp=None,
         feature_names=None,
         thread_count=-1,
         log_cout=sys.stdout,
@@ -534,6 +538,11 @@ class Pool(_PoolBase):
             Baseline for each instance.
             If not None, giving 2 dimensional array like data.
 
+        timestamp: list or numpy.ndarray, optional (default=None)
+            Timestamp for each instance.
+            Should be a non-negative integer.
+            Useful for sorting a learning dataset by this field during training.
+
         feature_names : list or string or pathlib.Path, optional (default=None)
             If list - list of names for each given data_feature.
             If string or pathlib.Path - path with scheme for feature names data to load.
@@ -616,7 +625,7 @@ class Pool(_PoolBase):
                         "python objects."
                     )
 
-                self._init(data, label, cat_features, text_features, embedding_features, pairs, weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, feature_names, thread_count)
+                self._init(data, label, cat_features, text_features, embedding_features, pairs, weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, thread_count)
         super(Pool, self).__init__()
 
     def _check_files(self, data, column_description, pairs):
@@ -814,6 +823,21 @@ class Pool(_PoolBase):
         if len(subgroup_id) != samples_count:
             raise CatBoostError("Length of subgroup_id={} and length of data={} are different.".format(len(subgroup_id), samples_count))
 
+    def _check_timestamp_type(self, timestamp):
+        """
+        Check type of timestamp parameter.
+        """
+        if not isinstance(timestamp, ARRAY_TYPES):
+            raise CatBoostError("Invalid timestamp type={}: must be array like.".format(type(timestamp)))
+
+    def _check_timestamp_shape(self, timestamp, samples_count):
+        """
+        Check timestamp length.
+        """
+        if len(timestamp) != samples_count:
+            raise CatBoostError("Length of timestamp={} and length of data={} are different.".format(len(timestamp), samples_count))
+
+
     def _check_feature_names(self, feature_names, num_col=None):
         if num_col is None:
             num_col = self.num_col()
@@ -887,6 +911,13 @@ class Pool(_PoolBase):
         pairs_weight = self._if_pandas_to_numpy(pairs_weight)
         self._check_weight_shape(pairs_weight, self.num_pairs())
         self._set_pairs_weight(pairs_weight)
+        return self
+
+    def set_timestamp(self, timestamp):
+        self._check_timestamp_type(timestamp)
+        timestamp = self._if_pandas_to_numpy(timestamp)
+        self._check_timestamp_shape(timestamp, self.num_row())
+        self._set_timestamp(timestamp)
         return self
 
     def save(self, fname):
@@ -1061,6 +1092,7 @@ class Pool(_PoolBase):
         subgroup_id,
         pairs_weight,
         baseline,
+        timestamp,
         feature_names,
         thread_count
     ):
@@ -1132,7 +1164,11 @@ class Pool(_PoolBase):
             baseline = self._if_pandas_to_numpy(baseline)
             baseline = np.reshape(baseline, (samples_count, -1))
             self._check_baseline_shape(baseline, samples_count)
-        self._init_pool(data, label, cat_features, text_features, embedding_features, pairs, weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, feature_names, thread_count)
+        if timestamp is not None:
+            self._check_timestamp_type(timestamp)
+            timestamp = self._if_pandas_to_numpy(timestamp)
+            self._check_timestamp_shape(timestamp, samples_count)
+        self._init_pool(data, label, cat_features, text_features, embedding_features, pairs, weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, thread_count)
 
 
 def _build_train_pool(X, y, cat_features, text_features, embedding_features, pairs, sample_weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, column_description):
@@ -1418,6 +1454,7 @@ class _CatBoostBase(object):
         return True
 
     def _set_trained_model_attributes(self):
+        setattr(self, '_is_fitted_', True)  # compatibility with meta algorithms in sklearn
         setattr(self, '_random_seed', self._object._get_random_seed())
         setattr(self, '_learning_rate', self._object._get_learning_rate())
         setattr(self, '_tree_count', self._object._get_tree_count())
@@ -1582,6 +1619,10 @@ class _CatBoostBase(object):
     @staticmethod
     def _is_multiregression_objective(loss_function):
         return isinstance(loss_function, str) and is_multiregression_objective(loss_function)
+
+    @staticmethod
+    def _is_multitarget_objective(loss_function):
+        return isinstance(loss_function, str) and is_multitarget_objective(loss_function)
 
     @staticmethod
     def _is_survivalregression_objective(loss_function):
@@ -2262,8 +2303,7 @@ class CatBoost(_CatBoostBase):
             Can be:
             - 'VirtEnsembles': return V (virtual_ensembles_count) predictions.
                 k-th virtEnsemle consists of trees [0, T/2] + [T/2 + T/(2V) * k, T/2 + T/(2V) * (k + 1)]  * constant.
-            - 'TotalUncertainty': return mean predict, var (and knowledge uncertainty
-                if model was trained with RMSEWithUncertainty loss function) for virtEnsembles
+            - 'TotalUncertainty': see returned predictions format in 'Returns' part
 
         ntree_end: int, optional (default=0)
             Model is applied on the interval [ntree_start, ntree_end) (zero-based indexing).
@@ -3061,6 +3101,8 @@ class CatBoost(_CatBoostBase):
             raise CatBoostError("You can't change params of fitted model.")
         for key, value in iteritems(params):
             self._init_params[key] = value
+        if 'thread_count' in self._init_params and self._init_params['thread_count'] == -1:
+            self._init_params.pop('thread_count')
         return self
 
     def plot_predictions(self, data, features_to_change, plot=True, plot_file=None):
@@ -3981,7 +4023,6 @@ class CatBoost(_CatBoostBase):
             fig = plot_features_selection_loss_graph(summary)
             fig.show()
 
-        summary.pop('loss_graph')  # required only for graph plotting
         return summary
 
     def _convert_to_asymmetric_representation(self):
@@ -4730,16 +4771,16 @@ class CatBoostClassifier(CatBoost):
         """
         return self._predict(data, prediction_type, ntree_start, ntree_end, thread_count, verbose, 'predict', task_type)
 
-    def predict_proba(self, data, ntree_start=0, ntree_end=0, thread_count=-1, verbose=None, task_type="CPU"):
+    def predict_proba(self, X, ntree_start=0, ntree_end=0, thread_count=-1, verbose=None, task_type="CPU"):
         """
-        Predict class probability with data.
+        Predict class probability with X.
 
         Parameters
         ----------
-        data : catboost.Pool or list of features or list of lists or numpy.ndarray or pandas.DataFrame or pandas.Series
+        X : catboost.Pool or list of features or list of lists or numpy.ndarray or pandas.DataFrame or pandas.Series
                 or catboost.FeaturesData
             Data to apply model on.
-            If data is a simple list (not list of lists) or a one-dimensional numpy.ndarray it is interpreted
+            If X is a simple list (not list of lists) or a one-dimensional numpy.ndarray it is interpreted
             as a list of features for a single object.
 
         ntree_start: int, optional (default=0)
@@ -4760,13 +4801,13 @@ class CatBoostClassifier(CatBoost):
         Returns
         -------
         prediction :
-            If data is for a single object
+            If X is for a single object
                 return one-dimensional numpy.ndarray with probability for every class.
             otherwise
                 return two-dimensional numpy.ndarray with shape (number_of_objects x number_of_classes)
                 with probability for every class for each object.
         """
-        return self._predict(data, 'Probability', ntree_start, ntree_end, thread_count, verbose, 'predict_proba', task_type)
+        return self._predict(X, 'Probability', ntree_start, ntree_end, thread_count, verbose, 'predict_proba', task_type)
 
 
     def predict_log_proba(self, data, ntree_start=0, ntree_end=0, thread_count=-1, verbose=None, task_type="CPU"):
@@ -6130,12 +6171,32 @@ def cv(pool=None, params=None, dtrain=None, iterations=None, num_boost_round=Non
         del params['cat_features']
 
     if 'text_features' in params:
-        raise CatBoostError("Cv with text features is not implemented.")
+        text_feature_indices_from_params = _get_features_indices(params['text_features'], pool.get_feature_names())
+        if set(pool.get_text_feature_indices()) != set(text_feature_indices_from_params):
+            raise CatBoostError("text features indices in params are different from ones in pool "
+                                + str(text_feature_indices_from_params) +
+                                " vs " + str(pool.get_text_feature_indices()))
+        del params['text_features']
+
 
     if 'embedding_features' in params:
-        raise CatBoostError("Cv with embedding features is not implemented.")
+        embedding_feature_indices_from_params = _get_features_indices(params['embedding_features'], pool.get_feature_names())
+        if set(pool.get_embedding_feature_indices()) != set(embedding_feature_indices_from_params):
+            raise CatBoostError("embedding features indices in params are different from ones in pool "
+                                + str(embedding_feature_indices_from_params) +
+                                " vs " + str(pool.get_embedding_feature_indices()))
+        del params['embedding_features']
 
-    with log_fixup(log_cout, log_cerr), plot_wrapper(plot, [_get_train_dir(params)]):
+    create_if_not_exist = lambda path: os.mkdir(path) if not os.path.exists(path) else None
+    train_dir = _get_train_dir(params)
+    create_if_not_exist(train_dir)
+    plot_dirs = []
+    for step in range(fold_count):
+        plot_dirs.append(os.path.join(train_dir, 'fold-{}'.format(step)))
+    for plot_dir in plot_dirs:
+        create_if_not_exist(plot_dir)
+
+    with log_fixup(log_cout, log_cerr), plot_wrapper(plot, plot_dirs):
         if not return_models:
             return _cv(params, pool, fold_count, inverted, partition_random_seed, shuffle, stratified,
                     metric_update_interval, as_pandas, folds, type, return_models)
@@ -6329,7 +6390,7 @@ def _plot_feature_statistics(statistics_by_feature, pool_names, feature_names, m
     for feature_num in statistics_by_feature:
         feature_name = feature_names[feature_num]
         statistics = statistics_by_feature[feature_num]
-        need_skip = True
+        need_skip = 'cat_values' not in statistics[0].keys()
         if 'borders' in statistics[0].keys():
             for stats in statistics:
                 if len(stats['borders']) > 0:

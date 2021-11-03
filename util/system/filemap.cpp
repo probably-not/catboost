@@ -71,7 +71,9 @@ namespace {
 #define GRANULARITY (TSysInfo::Instance().GRANULARITY_)
 #define PAGE_SIZE (TSysInfo::Instance().PAGE_SIZE_)
 
-const TString TMemoryMapCommon::UnknownFileName("Unknown_file_name");
+TString TMemoryMapCommon::UnknownFileName() {
+    return "Unknown_file_name";
+}
 
 static inline i64 DownToGranularity(i64 offset) noexcept {
     return offset & ~((i64)(GRANULARITY - 1));
@@ -112,12 +114,14 @@ void NPrivate::Precharge(const void* data, size_t dataSize, size_t off, size_t s
         endOff = dataSize;
     }
     size = endOff - off;
-    if (dataSize == 0 || size == 0)
+    if (dataSize == 0 || size == 0) {
         return;
+    }
 
     volatile const char *c = (const char*)data + off, *e = c + size;
-    for (; c < e; c += 512)
+    for (; c < e; c += 512) {
         *c;
+    }
 }
 
 class TMemoryMap::TImpl: public TAtomicRefCount<TImpl> {
@@ -139,10 +143,12 @@ public:
         if (!(Mode_ & oNotGreedy)) {
             PtrStart_ = mmap((caddr_t) nullptr, Length_, ModeToMmapProt(Mode_), ModeToMmapFlags(Mode_), File_.GetHandle(), 0);
 
-            if ((MAP_FAILED == PtrStart_) && Length_)
+            if ((MAP_FAILED == PtrStart_) && Length_) {
                 ythrow yexception() << "Can't map " << (unsigned long)Length_ << " bytes of file '" << DbgName_ << "' at offset 0: " << LastSystemErrorText();
-        } else
+            }
+        } else {
             PtrStart_ = nullptr;
+        }
 #endif
     }
 
@@ -269,12 +275,13 @@ public:
 #else
     inline bool Unmap(void* ptr, size_t size) {
     #if defined(_unix_)
-        if (Mode_ & oNotGreedy)
+        if (Mode_ & oNotGreedy) {
     #endif
             return size == 0 || ::munmap(static_cast<caddr_t>(ptr), size) == 0;
     #if defined(_unix_)
-        else
+        } else {
             return true;
+        }
     #endif
     }
 #endif
@@ -530,8 +537,9 @@ TMappedAllocation::TMappedAllocation(size_t size, bool shared, void* addr)
     , Mapping_(nullptr)
 #endif
 {
-    if (size != 0)
+    if (size != 0) {
         Alloc(size, addr);
+    }
 }
 
 void* TMappedAllocation::Alloc(size_t size, void* addr) {
@@ -547,14 +555,16 @@ void* TMappedAllocation::Alloc(size_t size, void* addr) {
         Ptr_ = nullptr;
     }
 #endif
-    if (Ptr_ != nullptr)
+    if (Ptr_ != nullptr) {
         Size_ = size;
+    }
     return Ptr_;
 }
 
 void TMappedAllocation::Dealloc() {
-    if (Ptr_ == nullptr)
+    if (Ptr_ == nullptr) {
         return;
+    }
 #if defined(_win_)
     UnmapViewOfFile(Ptr_);
     CloseHandle(Mapping_);

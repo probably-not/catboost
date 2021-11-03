@@ -20,6 +20,7 @@
 #include <catboost/private/libs/documents_importance/docs_importance.h>
 #include <catboost/private/libs/documents_importance/enums.h>
 #include <catboost/private/libs/options/cross_validation_params.h>
+#include <catboost/private/libs/options/enum_helpers.h>
 #include <catboost/private/libs/target/data_providers.h>
 
 #include <util/generic/cast.h>
@@ -166,6 +167,7 @@ EXPORT_FUNCTION CatBoostCreateFromFile_R(SEXP poolFileParam,
                                            EObjectsOrder::Undefined,
                                            UpdateThreadCount(asInteger(threadCountParam)),
                                            asLogical(verboseParam),
+                                           /*forceUnitAutoPairWeights*/ false,
                                            /*classLabels=*/Nothing());
     result = PROTECT(R_MakeExternalPtr(poolPtr.Get(), R_NilValue, R_NilValue));
     R_RegisterCFinalizerEx(result, _Finalizer<TPoolHandle>, TRUE);
@@ -175,9 +177,11 @@ EXPORT_FUNCTION CatBoostCreateFromFile_R(SEXP poolFileParam,
     return result;
 }
 
-EXPORT_FUNCTION CatBoostCreateFromMatrix_R(SEXP matrixParam,
+EXPORT_FUNCTION CatBoostCreateFromMatrix_R(SEXP floatAndCatMatrixParam,
                                 SEXP targetParam,
-                                SEXP catFeaturesParam,
+                                SEXP catFeaturesIndicesParam,
+                                SEXP textMatrixParam,
+                                SEXP textFeaturesIndicesParam,
                                 SEXP pairsParam,
                                 SEXP weightParam,
                                 SEXP groupIdParam,
@@ -188,9 +192,15 @@ EXPORT_FUNCTION CatBoostCreateFromMatrix_R(SEXP matrixParam,
                                 SEXP featureNamesParam) {
     SEXP result = NULL;
     R_API_BEGIN();
-    SEXP dataDim = getAttrib(matrixParam, R_DimSymbol);
+    SEXP dataDim = floatAndCatMatrixParam != R_NilValue ?
+                   getAttrib(floatAndCatMatrixParam, R_DimSymbol) :
+                   getAttrib(textMatrixParam, R_DimSymbol);
     ui32 dataRows = SafeIntegerCast<ui32>(INTEGER(dataDim)[0]);
-    ui32 dataColumns = SafeIntegerCast<ui32>(INTEGER(dataDim)[1]);
+    ui32 floatAndCatColumns = floatAndCatMatrixParam == R_NilValue ? 0 :
+                       SafeIntegerCast<ui32>(INTEGER(getAttrib(floatAndCatMatrixParam, R_DimSymbol))[1]);
+    ui32 textColumns = textMatrixParam == R_NilValue ? 0 :
+                       SafeIntegerCast<ui32>(INTEGER(getAttrib(textMatrixParam, R_DimSymbol))[1]);
+    ui32 dataColumns = floatAndCatColumns + textColumns;
     SEXP targetDim = getAttrib(targetParam, R_DimSymbol);
     ui32 targetRows = 0;
     ui32 targetColumns = 0;
@@ -218,8 +228,8 @@ EXPORT_FUNCTION CatBoostCreateFromMatrix_R(SEXP matrixParam,
 
         metaInfo.FeaturesLayout = MakeIntrusive<TFeaturesLayout>(
             dataColumns,
-            ToUnsigned(GetVectorFromSEXP<int>(catFeaturesParam)),
-            TVector<ui32>{}, // TODO(d-kruchinin) support text features in R
+            ToUnsigned(GetVectorFromSEXP<int>(catFeaturesIndicesParam)),
+            ToUnsigned(GetVectorFromSEXP<int>(textFeaturesIndicesParam)),
             TVector<ui32>{}, // TODO(akhropov) support embedding features in R
             featureId);
 
@@ -284,23 +294,36 @@ EXPORT_FUNCTION CatBoostCreateFromMatrix_R(SEXP matrixParam,
             }
         }
 
-        double *ptr_matrixParam = Rf_isNull(matrixParam)? nullptr : REAL(matrixParam);
-        for (size_t j = 0; j < dataColumns; ++j) {
-            if (metaInfo.FeaturesLayout->GetExternalFeatureType(j) == EFeatureType::Categorical) {
-                TVector<ui32> catValues;
-                catValues.yresize(dataRows);
+        double *ptr_floatAndCatMatrixParam = Rf_isNull(floatAndCatMatrixParam)? nullptr : REAL(floatAndCatMatrixParam);
+        size_t indexTextMatrix = 0;
+        size_t indexFloatAndCatMatrix = 0;
+        for (size_t j = 0; j < dataColumns; ++j){
+            if (metaInfo.FeaturesLayout->GetExternalFeatureType(j) == EFeatureType::Text) {
+                TVector<TString> textValues;
+                textValues.yresize(dataRows);
                 for (ui32 i = 0; i < dataRows; ++i) {
-                    catValues[i] =
-                        ConvertFloatCatFeatureToIntHash(static_cast<float>(ptr_matrixParam[i + dataRows * j]));
+                    textValues[i] = CHAR(STRING_PTR(textMatrixParam)[i + dataRows * indexTextMatrix]);
                 }
-                visitor->AddCatFeature(j, TMaybeOwningConstArrayHolder<ui32>::CreateOwning(std::move(catValues)));
+                visitor->AddTextFeature(j, TMaybeOwningConstArrayHolder<TString>::CreateOwning(std::move(textValues)));
+                indexTextMatrix++;
             } else {
-                TVector<float> floatValues;
-                floatValues.yresize(dataRows);
-                for (ui32 i = 0; i < dataRows; ++i) {
-                    floatValues[i] = static_cast<float>(ptr_matrixParam[i + dataRows * j]);
+                if (metaInfo.FeaturesLayout->GetExternalFeatureType(j) == EFeatureType::Categorical) {
+                    TVector<ui32> catValues;
+                    catValues.yresize(dataRows);
+                    for (ui32 i = 0; i < dataRows; ++i) {
+                        catValues[i] =
+                            ConvertFloatCatFeatureToIntHash(static_cast<float>(ptr_floatAndCatMatrixParam[i + dataRows * indexFloatAndCatMatrix]));
+                    }
+                    visitor->AddCatFeature(j, TMaybeOwningConstArrayHolder<ui32>::CreateOwning(std::move(catValues)));
+                } else {
+                    TVector<float> floatValues;
+                    floatValues.yresize(dataRows);
+                    for (ui32 i = 0; i < dataRows; ++i) {
+                        floatValues[i] = static_cast<float>(ptr_floatAndCatMatrixParam[i + dataRows * indexFloatAndCatMatrix]);
+                    }
+                    visitor->AddFloatFeature(j, MakeTypeCastArrayHolderFromVector<float, float>(floatValues));
                 }
-                visitor->AddFloatFeature(j, MakeTypeCastArrayHolderFromVector<float, float>(floatValues));
+                indexFloatAndCatMatrix++;
             }
         }
 
@@ -389,6 +412,15 @@ EXPORT_FUNCTION CatBoostIsOblivious_R(SEXP modelParam) {
     return result;
 }
 
+EXPORT_FUNCTION CatBoostIsGroupwiseMetric_R(SEXP modelParam) {
+    SEXP result = NULL;
+    R_API_BEGIN();
+    TFullModelHandle model = reinterpret_cast<TFullModelHandle>(R_ExternalPtrAddr(modelParam));
+    result = ScalarLogical(static_cast<int>(IsGroupwiseMetric(model->GetLossFunctionName())));
+    R_API_END();
+    return result;
+}
+
 EXPORT_FUNCTION CatBoostPoolSlice_R(SEXP poolParam, SEXP sizeParam, SEXP offsetParam) {
     SEXP result = NULL;
     size_t size, offset;
@@ -404,7 +436,7 @@ EXPORT_FUNCTION CatBoostPoolSlice_R(SEXP poolParam, SEXP sizeParam, SEXP offsetP
 
     CB_ENSURE(
         featuresLayout.GetExternalFeatureCount() == featuresLayout.GetFloatFeatureCount(),
-        "Cannot slice non-numeric features data"
+        "Dataset slicing error: non-numeric features present, slicing datasets with categorical and text features is not supported"
     );
 
     result = PROTECT(allocVector(VECSXP, size));
@@ -445,7 +477,7 @@ EXPORT_FUNCTION CatBoostPoolSlice_R(SEXP poolParam, SEXP sizeParam, SEXP offsetP
 
     for (auto targetIdx : xrange(targetCount)) {
         if (const ITypedSequencePtr<float>* typedSequence
-                = GetIf<ITypedSequencePtr<float>>(&((*target)[targetIdx])))
+                = std::get_if<ITypedSequencePtr<float>>(&((*target)[targetIdx])))
         {
             TIntrusivePtr<ITypedArraySubset<float>> subset = (*typedSequence)->GetSubset(
                 &objectsGroupingSubset.GetObjectsIndexing()
@@ -456,7 +488,7 @@ EXPORT_FUNCTION CatBoostPoolSlice_R(SEXP poolParam, SEXP sizeParam, SEXP offsetP
                 }
             );
         } else {
-            TConstArrayRef<TString> stringTargetPart = Get<TVector<TString>>((*target)[targetIdx]);
+            TConstArrayRef<TString> stringTargetPart = std::get<TVector<TString>>((*target)[targetIdx]);
 
             for (size_t i = offset; i < sliceEnd; ++i) {
                 rows[i - offset][targetIdx] = FromString<double>(stringTargetPart[i]);
@@ -745,9 +777,9 @@ EXPORT_FUNCTION CatBoostPredictMulti_R(SEXP modelParam, SEXP poolParam, SEXP ver
     TFullModelHandle model = reinterpret_cast<TFullModelHandle>(R_ExternalPtrAddr(modelParam));
     TPoolHandle pool = reinterpret_cast<TPoolHandle>(R_ExternalPtrAddr(poolParam));
     EPredictionType predictionType;
-    CB_ENSURE(TryFromString<EPredictionType>(CHAR(asChar(typeParam)), predictionType),
-              "unsupported prediction type: 'Probability', 'Class' or 'RawFormulaVal' was expected");
-
+    CB_ENSURE(TryFromString<EPredictionType>(CHAR(asChar(typeParam)), predictionType) &&
+              !IsUncertaintyPredictionType(predictionType) && predictionType != EPredictionType::InternalRawFormulaVal,
+              "Unsupported prediction type: 'Probability', 'LogProbability', 'Class', 'RawFormulaVal', 'Exponent' or 'RMSEWithUncertainty' was expected");
     TVector<TVector<double>> prediction = ApplyModelMulti(*model,
                                                           *pool,
                                                           asLogical(verboseParam),
@@ -793,6 +825,34 @@ EXPORT_FUNCTION CatBoostPrepareEval_R(SEXP approxParam, SEXP typeParam, SEXP los
     for (size_t i = 0, k = 0; i < dataRows; ++i) {
         for (size_t j = 0; j < prediction.size(); ++j) {
             ptr_result[k++] = prediction[j][i];
+        }
+    }
+    R_API_END();
+    UNPROTECT(1);
+    return result;
+}
+
+EXPORT_FUNCTION CatBoostPredictVirtualEnsembles_R(SEXP modelParam, SEXP poolParam, SEXP verboseParam,
+                            SEXP typeParam, SEXP treeCountEndParam, SEXP virtualEnsemblesCountParam, SEXP threadCountParam) {
+    SEXP result = NULL;
+    R_API_BEGIN();
+    TFullModelHandle model = reinterpret_cast<TFullModelHandle>(R_ExternalPtrAddr(modelParam));
+    TPoolHandle pool = reinterpret_cast<TPoolHandle>(R_ExternalPtrAddr(poolParam));
+    EPredictionType predictionType;
+    CB_ENSURE(TryFromString<EPredictionType>(CHAR(asChar(typeParam)), predictionType) && IsUncertaintyPredictionType(predictionType),
+              "Unsupported virtual ensembles prediction type: 'VirtEnsembles' or 'TotalUncertainty' was expected");
+    TVector<TVector<double>> prediction = ApplyUncertaintyPredictions(*model,
+                                                                      *pool,
+                                                                      asLogical(verboseParam),
+                                                                      predictionType,
+                                                                      asInteger(treeCountEndParam),
+                                                                      asInteger(virtualEnsemblesCountParam),
+                                                                      UpdateThreadCount(asInteger(threadCountParam)));
+    size_t predictionSize = prediction.size() * pool->ObjectsGrouping->GetObjectCount();
+    result = PROTECT(allocVector(REALSXP, predictionSize));
+    for (size_t i = 0, k = 0; i < pool->ObjectsGrouping->GetObjectCount(); ++i) {
+        for (size_t j = 0; j < prediction.size(); ++j) {
+            REAL(result)[k++] = prediction[j][i];
         }
     }
     R_API_END();

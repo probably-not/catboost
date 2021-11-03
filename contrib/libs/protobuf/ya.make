@@ -6,9 +6,16 @@ PROVIDES(protobuf)
 
 
 
-VERSION(3.15.8)
+VERSION(3.17.3)
 
-LICENSE(BSD-3-Clause)
+ORIGINAL_SOURCE(https://github.com/protocolbuffers/protobuf/archive/v3.17.3.tar.gz)
+
+LICENSE(
+    BSD-3-Clause
+    Protobuf-License
+)
+
+LICENSE_TEXTS(.yandex_meta/licenses.list.txt)
 
 PEERDIR(
     contrib/libs/zlib
@@ -16,7 +23,9 @@ PEERDIR(
 
 ADDINCL(
     GLOBAL contrib/libs/protobuf/src
-    GLOBAL FOR proto contrib/libs/protobuf/src
+    GLOBAL FOR
+    proto
+    contrib/libs/protobuf/src
 )
 
 NO_COMPILER_WARNINGS()
@@ -46,6 +55,7 @@ SRCS(
     src/google/protobuf/empty.pb.cc
     src/google/protobuf/extension_set.cc
     src/google/protobuf/extension_set_heavy.cc
+    src/google/protobuf/field_access_listener.cc
     src/google/protobuf/field_mask.pb.cc
     src/google/protobuf/generated_enum_util.cc
     src/google/protobuf/generated_message_reflection.cc
@@ -113,10 +123,6 @@ SRCS(
     src/google/protobuf/wire_format.cc
     src/google/protobuf/wire_format_lite.cc
     src/google/protobuf/wrappers.pb.cc
-)
-
-SUPPRESSIONS(
-    tsan.supp
 )
 
 FILES(

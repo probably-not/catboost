@@ -87,10 +87,13 @@ TTargetClassifier BuildTargetClassifier(
         case ELossFunction::StochasticRank:
         case ELossFunction::Logloss:
         case ELossFunction::CrossEntropy:
+        case ELossFunction::MultiLogloss:
+        case ELossFunction::MultiCrossEntropy:
         case ELossFunction::Huber:
         case ELossFunction::UserPerObjMetric:
         case ELossFunction::UserQuerywiseMetric:
         case ELossFunction::Tweedie:
+        case ELossFunction::LogCosh:
             return TTargetClassifier(
                 SelectBorders(target, targetBorderCount, targetBorderType, allowConstLabel),
                 targetId);
@@ -99,7 +102,7 @@ TTargetClassifier BuildTargetClassifier(
         case ELossFunction::MultiClassOneVsAll:
             return TTargetClassifier(GetMultiClassBorders(targetBorderCount), targetId);
 
-        case ELossFunction::PythonUserDefinedMultiRegression:
+        case ELossFunction::PythonUserDefinedMultiTarget:
         case ELossFunction::PythonUserDefinedPerObject: {
             Y_ASSERT(objectiveDescriptor.Defined());
             return TTargetClassifier(

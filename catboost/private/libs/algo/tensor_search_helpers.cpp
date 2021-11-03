@@ -11,26 +11,12 @@
 
 #include <library/cpp/threading/local_executor/local_executor.h>
 
+#include <util/generic/cast.h>
 #include <util/generic/maybe.h>
 #include <util/generic/xrange.h>
 
 
 using namespace NCB;
-
-
-const TQuantizedObjectsDataProvider& GetLearnObjectsData(
-    const TSplitCandidate& splitCandidate,
-    const TTrainingDataProviders& data,
-    const TFold& fold
-) {
-    if (splitCandidate.Type == ESplitType::EstimatedFeature) {
-        if (splitCandidate.IsOnlineEstimatedFeature) {
-            return *(fold.GetOnlineEstimatedFeatures().Learn);
-        }
-        return *(data.EstimatedObjectsData.Learn);
-    }
-    return *(data.Learn->ObjectsData);
-}
 
 
 TSplit TCandidateInfo::GetBestSplit(
@@ -230,6 +216,9 @@ THolder<IDerCalcer> BuildError(
             return MakeHolder<TMultiClassError>(isStoreExpApprox);
         case ELossFunction::MultiClassOneVsAll:
             return MakeHolder<TMultiClassOneVsAllError>(isStoreExpApprox);
+        case ELossFunction::MultiLogloss:
+        case ELossFunction::MultiCrossEntropy:
+            return MakeHolder<TMultiCrossEntropyError>();
         case ELossFunction::PairLogit:
             return MakeHolder<TPairLogitError>(isStoreExpApprox);
         case ELossFunction::PairLogitPairwise:
@@ -284,8 +273,8 @@ THolder<IDerCalcer> BuildError(
         }
         case ELossFunction::PythonUserDefinedPerObject:
             return MakeHolder<TCustomError>(params, descriptor);
-        case ELossFunction::PythonUserDefinedMultiRegression:
-            return MakeHolder<TMultiRegressionCustomError>(params, descriptor);
+        case ELossFunction::PythonUserDefinedMultiTarget:
+            return MakeHolder<TMultiTargetCustomError>(params, descriptor);
         case ELossFunction::UserPerObjMetric:
             return MakeHolder<TUserDefinedPerObjectError>(
                     params.LossFunctionDescription->GetLossParamsMap(),
@@ -300,6 +289,8 @@ THolder<IDerCalcer> BuildError(
             return MakeHolder<TTweedieError>(
                 NCatboostOptions::GetTweedieParam(params.LossFunctionDescription),
                 isStoreExpApprox);
+        case ELossFunction::LogCosh:
+            return MakeHolder<TLogCoshError>(isStoreExpApprox);
         default:
             CB_ENSURE(false, "provided error function is not supported");
     }
@@ -473,7 +464,7 @@ static void CalcWeightedData(
 void Bootstrap(
     const NCatboostOptions::TCatBoostOptions& params,
     bool hasOfflineEstimatedFeatures,
-    const TVector<TIndexType>& indices,
+    TConstArrayRef<TIndexType> indices,
     const TVector<TVector<TVector<double>>>& leafValues,
     TFold* fold,
     TCalcScoreFold* sampledDocs,
@@ -482,7 +473,7 @@ void Bootstrap(
     bool shouldSortByLeaf,
     ui32 leavesCount
 ) {
-    const int learnSampleCount = indices.ysize();
+    const int learnSampleCount = SafeIntegerCast<int>(indices.size());
     const EBootstrapType bootstrapType = params.ObliviousTreeOptions->BootstrapConfig->GetBootstrapType();
     const EBoostingType boostingType = params.BoostingOptions->BoostingType;
     const ESamplingUnit samplingUnit = params.ObliviousTreeOptions->BootstrapConfig->GetSamplingUnit();

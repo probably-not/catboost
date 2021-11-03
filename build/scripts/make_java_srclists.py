@@ -13,6 +13,7 @@ def writelines(f, rng):
 def main():
     args = pcf.get_args(sys.argv[1:])
     parser = argparse.ArgumentParser()
+    parser.add_argument('--moddir')
     parser.add_argument('--java')
     parser.add_argument('--groovy')
     parser.add_argument('--kotlin')
@@ -51,7 +52,7 @@ def main():
             continue
         elif next_arg == SRCDIR_ARG:
             assert cur_srcdir is None
-            cur_srcdir = src if os.path.isabs(src) else os.path.join(os.getcwd(), src)
+            cur_srcdir = src if os.path.isabs(src) else os.path.join(args.moddir, src)
             next_arg = FILE_ARG
             continue
 
@@ -62,9 +63,9 @@ def main():
                 rel = os.path.relpath(src, args.source_root)
                 if not rel.startswith('..' + os.path.sep):
                     coverage.append(rel)
-        elif src.endswith(".kt"):
+        elif args.kotlin and src.endswith(".kt"):
             kotlin.append(src)
-        elif src.endswith(".groovy"):
+        elif args.groovy and src.endswith(".groovy"):
             groovy.append(src)
         else:
             if src == '--resources':

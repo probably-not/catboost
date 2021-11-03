@@ -1,8 +1,9 @@
 import os
 import sys
 from abc import abstractmethod
-from asyncio import get_event_loop
 from contextlib import contextmanager
+
+from prompt_toolkit.eventloop import get_event_loop
 
 from ..utils import SPHINX_AUTODOC_RUNNING
 
@@ -12,7 +13,7 @@ if not SPHINX_AUTODOC_RUNNING:
     import msvcrt
     from ctypes import windll
 
-from ctypes import pointer
+from ctypes import Array, pointer
 from ctypes.wintypes import DWORD, HANDLE
 from typing import (
     Callable,
@@ -29,7 +30,7 @@ from prompt_toolkit.eventloop import run_in_executor_with_context
 from prompt_toolkit.eventloop.win32 import create_win32_event, wait_for_handles
 from prompt_toolkit.key_binding.key_processor import KeyPress
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.mouse_events import MouseEventType
+from prompt_toolkit.mouse_events import MouseButton, MouseEventType
 from prompt_toolkit.win32_types import (
     INPUT_RECORD,
     KEY_EVENT_RECORD,
@@ -49,6 +50,13 @@ __all__ = [
     "attach_win32_input",
     "detach_win32_input",
 ]
+
+# Win32 Constants for MOUSE_EVENT_RECORD.
+# See: https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str
+FROM_LEFT_1ST_BUTTON_PRESSED = 0x1
+RIGHTMOST_BUTTON_PRESSED = 0x2
+MOUSE_MOVED = 0x0001
+MOUSE_WHEELED = 0x0004
 
 
 class _Win32InputBase(Input):
@@ -252,6 +260,9 @@ class ConsoleInputReader:
         # Fill in 'data' for key presses.
         all_keys = [self._insert_key_data(key) for key in all_keys]
 
+        # Correct non-bmp characters that are passed as separate surrogate codes
+        all_keys = list(self._merge_paired_surrogates(all_keys))
+
         if self.recognize_paste and self._is_paste(all_keys):
             gen = iter(all_keys)
             k: Optional[KeyPress]
@@ -260,7 +271,7 @@ class ConsoleInputReader:
                 # Pasting: if the current key consists of text or \n, turn it
                 # into a BracketedPaste.
                 data = []
-                while k and (isinstance(k.key, str) or k.key == Keys.ControlJ):
+                while k and (not isinstance(k.key, Keys) or k.key == Keys.ControlJ):
                     data.append(k.data)
                     try:
                         k = next(gen)
@@ -289,7 +300,9 @@ class ConsoleInputReader:
 
         return KeyPress(key_press.key, data)
 
-    def _get_keys(self, read: DWORD, input_records) -> Iterator[KeyPress]:
+    def _get_keys(
+        self, read: DWORD, input_records: "Array[INPUT_RECORD]"
+    ) -> Iterator[KeyPress]:
         """
         Generator that yields `KeyPress` objects from the input records.
         """
@@ -314,6 +327,39 @@ class ConsoleInputReader:
                         yield key_press
 
     @staticmethod
+    def _merge_paired_surrogates(key_presses: List[KeyPress]) -> Iterator[KeyPress]:
+        """
+        Combines consecutive KeyPresses with high and low surrogates into
+        single characters
+        """
+        buffered_high_surrogate = None
+        for key in key_presses:
+            is_text = not isinstance(key.key, Keys)
+            is_high_surrogate = is_text and "\uD800" <= key.key <= "\uDBFF"
+            is_low_surrogate = is_text and "\uDC00" <= key.key <= "\uDFFF"
+
+            if buffered_high_surrogate:
+                if is_low_surrogate:
+                    # convert high surrogate + low surrogate to single character
+                    fullchar = (
+                        (buffered_high_surrogate.key + key.key)
+                        .encode("utf-16-le", "surrogatepass")
+                        .decode("utf-16-le")
+                    )
+                    key = KeyPress(fullchar, fullchar)
+                else:
+                    yield buffered_high_surrogate
+                buffered_high_surrogate = None
+
+            if is_high_surrogate:
+                buffered_high_surrogate = key
+            else:
+                yield key
+
+        if buffered_high_surrogate:
+            yield buffered_high_surrogate
+
+    @staticmethod
     def _is_paste(keys: List[KeyPress]) -> bool:
         """
         Return `True` when we should consider this list of keys as a paste
@@ -328,7 +374,7 @@ class ConsoleInputReader:
         newline_count = 0
 
         for k in keys:
-            if isinstance(k.key, str):
+            if not isinstance(k.key, Keys):
                 text_count += 1
             if k.key == Keys.ControlM:
                 newline_count += 1
@@ -343,11 +389,13 @@ class ConsoleInputReader:
 
         result: Optional[KeyPress] = None
 
+        control_key_state = ev.ControlKeyState
         u_char = ev.uChar.UnicodeChar
-        ascii_char = u_char.encode("utf-8")
+        # Use surrogatepass because u_char may be an unmatched surrogate
+        ascii_char = u_char.encode("utf-8", "surrogatepass")
 
-        # NOTE: We don't use `ev.uChar.AsciiChar`. That appears to be latin-1
-        #       encoded. See also:
+        # NOTE: We don't use `ev.uChar.AsciiChar`. That appears to be the
+        # unicode code point truncated to 1 byte. See also:
         # https://github.com/ipython/ipython/issues/10004
         # https://github.com/jonathanslenders/python-prompt-toolkit/issues/389
 
@@ -367,10 +415,10 @@ class ConsoleInputReader:
         # First we handle Shift-Control-Arrow/Home/End (need to do this first)
         if (
             (
-                ev.ControlKeyState & self.LEFT_CTRL_PRESSED
-                or ev.ControlKeyState & self.RIGHT_CTRL_PRESSED
+                control_key_state & self.LEFT_CTRL_PRESSED
+                or control_key_state & self.RIGHT_CTRL_PRESSED
             )
-            and ev.ControlKeyState & self.SHIFT_PRESSED
+            and control_key_state & self.SHIFT_PRESSED
             and result
         ):
             mapping: Dict[str, str] = {
@@ -388,8 +436,8 @@ class ConsoleInputReader:
 
         # Correctly handle Control-Arrow/Home/End and Control-Insert/Delete keys.
         if (
-            ev.ControlKeyState & self.LEFT_CTRL_PRESSED
-            or ev.ControlKeyState & self.RIGHT_CTRL_PRESSED
+            control_key_state & self.LEFT_CTRL_PRESSED
+            or control_key_state & self.RIGHT_CTRL_PRESSED
         ) and result:
             mapping = {
                 Keys.Left: Keys.ControlLeft,
@@ -407,7 +455,7 @@ class ConsoleInputReader:
 
         # Turn 'Tab' into 'BackTab' when shift was pressed.
         # Also handle other shift-key combination
-        if ev.ControlKeyState & self.SHIFT_PRESSED and result:
+        if control_key_state & self.SHIFT_PRESSED and result:
             mapping = {
                 Keys.Tab: Keys.BackTab,
                 Keys.Left: Keys.ShiftLeft,
@@ -426,8 +474,8 @@ class ConsoleInputReader:
         # Turn 'Space' into 'ControlSpace' when control was pressed.
         if (
             (
-                ev.ControlKeyState & self.LEFT_CTRL_PRESSED
-                or ev.ControlKeyState & self.RIGHT_CTRL_PRESSED
+                control_key_state & self.LEFT_CTRL_PRESSED
+                or control_key_state & self.RIGHT_CTRL_PRESSED
             )
             and result
             and result.data == " "
@@ -438,8 +486,8 @@ class ConsoleInputReader:
         # detect this combination. But it's really practical on Windows.)
         if (
             (
-                ev.ControlKeyState & self.LEFT_CTRL_PRESSED
-                or ev.ControlKeyState & self.RIGHT_CTRL_PRESSED
+                control_key_state & self.LEFT_CTRL_PRESSED
+                or control_key_state & self.RIGHT_CTRL_PRESSED
             )
             and result
             and result.key == Keys.ControlJ
@@ -455,7 +503,7 @@ class ConsoleInputReader:
         #       all backslashes to be prefixed with escape. (Esc-\ has a
         #       meaning in E-macs, for instance.)
         if result:
-            meta_pressed = ev.ControlKeyState & self.LEFT_ALT_PRESSED
+            meta_pressed = control_key_state & self.LEFT_ALT_PRESSED
 
             if meta_pressed:
                 return [KeyPress(Keys.Escape, ""), result]
@@ -469,39 +517,48 @@ class ConsoleInputReader:
         """
         Handle mouse events. Return a list of KeyPress instances.
         """
-        FROM_LEFT_1ST_BUTTON_PRESSED = 0x1
-        MOUSE_MOVED = 0x0001
-        MOUSE_WHEELED = 0x0004
+        event_flags = ev.EventFlags
+        button_state = ev.ButtonState
 
-        result = []
         event_type: Optional[MouseEventType] = None
-
-        # Move events.
-        if ev.EventFlags & MOUSE_MOVED:
-            if ev.ButtonState == FROM_LEFT_1ST_BUTTON_PRESSED:
-                event_type = MouseEventType.MOUSE_DOWN_MOVE
+        button: MouseButton = MouseButton.NONE
 
         # Scroll events.
-        elif ev.EventFlags & MOUSE_WHEELED:
-            if ev.ButtonState > 0:
+        if event_flags & MOUSE_WHEELED:
+            if button_state > 0:
                 event_type = MouseEventType.SCROLL_UP
             else:
                 event_type = MouseEventType.SCROLL_DOWN
+        else:
+            # Handle button state for non-scroll events.
+            if button_state == FROM_LEFT_1ST_BUTTON_PRESSED:
+                button = MouseButton.LEFT
 
-        # Mouse down (left button).
-        elif ev.ButtonState == FROM_LEFT_1ST_BUTTON_PRESSED:
-            event_type = MouseEventType.MOUSE_DOWN
+            elif button_state == RIGHTMOST_BUTTON_PRESSED:
+                button = MouseButton.RIGHT
+
+        # Move events.
+        if event_flags & MOUSE_MOVED:
+            event_type = MouseEventType.MOUSE_MOVE
 
         # No key pressed anymore: mouse up.
-        else:
-            event_type = MouseEventType.MOUSE_UP
+        if event_type is None:
+            if button_state > 0:
+                # Some button pressed.
+                event_type = MouseEventType.MOUSE_DOWN
+            else:
+                # No button pressed.
+                event_type = MouseEventType.MOUSE_UP
 
-        if event_type is not None:
-            data = ";".join(
-                [event_type.value, str(ev.MousePosition.X), str(ev.MousePosition.Y)]
-            )
-            result.append(KeyPress(Keys.WindowsMouseEvent, data))
-        return result
+        data = ";".join(
+            [
+                button.value,
+                event_type.value,
+                str(ev.MousePosition.X),
+                str(ev.MousePosition.Y),
+            ]
+        )
+        return [KeyPress(Keys.WindowsMouseEvent, data)]
 
 
 class _Win32Handles:
@@ -593,7 +650,9 @@ class _Win32Handles:
 
 
 @contextmanager
-def attach_win32_input(input: _Win32InputBase, callback: Callable[[], None]):
+def attach_win32_input(
+    input: _Win32InputBase, callback: Callable[[], None]
+) -> Iterator[None]:
     """
     Context manager that makes this input active in the current event loop.
 
@@ -620,7 +679,7 @@ def attach_win32_input(input: _Win32InputBase, callback: Callable[[], None]):
 
 
 @contextmanager
-def detach_win32_input(input: _Win32InputBase):
+def detach_win32_input(input: _Win32InputBase) -> Iterator[None]:
     win32_handles = input.win32_handles
     handle = input.handle
 

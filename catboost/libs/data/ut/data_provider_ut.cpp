@@ -41,6 +41,7 @@ static void CreateQuantizedObjectsDataProviderTestData(
         /*hasAdditionalGroupWeight*/ false,
         /*hasTimestamps*/ false,
         hasPairs,
+        /*forceUnitAutoPairWeights*/ false,
         /*additionalBaselineCount*/ Nothing(),
         &featureId
     );
@@ -56,7 +57,7 @@ static void CreateQuantizedObjectsDataProviderTestData(
     );
 
     commonObjectsData.Order = EObjectsOrder::RandomShuffled;
-    commonObjectsData.GroupIds = TVector<TGroupId>{
+    commonObjectsData.GroupIds.GetMaybeNumData() = TVector<TGroupId>{
         CalcGroupIdFor("query0"),
         CalcGroupIdFor("query0"),
         CalcGroupIdFor("query1"),
@@ -65,7 +66,7 @@ static void CreateQuantizedObjectsDataProviderTestData(
         CalcGroupIdFor("Query 2")
     };
 
-    commonObjectsData.SubgroupIds = TVector<TSubgroupId>{0, 12, 18, 21, 0, 2};
+    commonObjectsData.SubgroupIds.GetMaybeNumData() = TVector<TSubgroupId>{0, 12, 18, 21, 0, 2};
     commonObjectsData.Timestamp = TVector<ui64>{10, 20, 10, 30, 50, 70};
 
 
@@ -244,7 +245,7 @@ Y_UNIT_TEST_SUITE(TDataProviderTemplate) {
                 std::move(metaInfo),
                 std::move(objectsData),
                 objectsGrouping,
-                TRawTargetDataProvider(objectsGrouping, std::move(rawTargetData), false, &localExecutor)
+                TRawTargetDataProvider(objectsGrouping, std::move(rawTargetData), false, false, &localExecutor)
             );
         }
 

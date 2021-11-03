@@ -19,8 +19,10 @@ namespace NCB {
     struct TTargetCreationOptions {
         bool IsClass;
         bool IsMultiClass;
+        bool IsMultiLabel;
         bool CreateBinClassTarget;
         bool CreateMultiClassTarget;
+        bool CreateMultiLabelTarget;
         bool CreateGroups;
         bool CreatePairs;
         TMaybe<ui32> MaxPairsCount;
@@ -51,6 +53,15 @@ namespace NCB {
             return !PermutationForGrouping.empty();
         }
     };
+
+    TTargetCreationOptions MakeTargetCreationOptions(
+        bool dataHasWeights,
+        ui32 dataTargetDimension,
+        bool dataHasGroups,
+        TConstArrayRef<NCatboostOptions::TLossDescription> metricDescriptions,
+        TMaybe<ui32> knownModelApproxDimension,
+        bool knownIsClassification,
+        const TInputClassificationInfo& inputClassificationInfo);
 
     TTargetCreationOptions MakeTargetCreationOptions(
         const TRawTargetDataProvider &rawData,
@@ -113,12 +124,22 @@ namespace NCB {
         const TWeights<float>& groupWeights,
         TMaybe<TRawPairsDataRef> pairs);
 
+    void UpdateTargetProcessingParams(
+        const TInputClassificationInfo& inputClassificationInfo,
+        const TTargetCreationOptions& targetCreationOptions,
+        TMaybe<ui32> knownApproxDimension,
+        const NCatboostOptions::TLossDescription* mainLossFunction, // can be nullptr
+        bool* isRealTarget,
+        TMaybe<ui32>* knownClassCount,
+        TInputClassificationInfo* updatedInputClassificationInfo);
+
     TVector<TSharedVector<float>> ConvertTarget(
         TMaybeData<TConstArrayRef<TRawTarget>> maybeRawTarget,
         ERawTargetType targetType,
         bool isRealTarget,
         bool isClass,
         bool isMultiClass,
+        bool isMultiLabel,
         TMaybe<float> targetBorder,
         bool classCountUnknown,
         const TVector<NJson::TJsonValue> inputClassLabels,

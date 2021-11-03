@@ -607,7 +607,7 @@ class RE2 {
   bool CheckRewriteString(const StringPiece& rewrite,
                           std::string* error) const;
 
-  bool CheckRewriteString(const StringPiece& rewrite, nullptr_t error) const {
+  bool CheckRewriteString(const StringPiece& rewrite, std::nullptr_t error) const {
     return CheckRewriteString(rewrite, static_cast<std::string*>(error));
   }
 
@@ -876,8 +876,9 @@ class RE2::Arg {
 #if !defined(_MSC_VER)
   template <typename T>
   using CanParseFrom = typename std::enable_if<
-      std::is_member_function_pointer<decltype(
-          (bool (T::*)(const char*, size_t))&T::ParseFrom)>::value,
+      std::is_member_function_pointer<
+          decltype(static_cast<bool (T::*)(const char*, size_t)>(
+              &T::ParseFrom))>::value,
       int>::type;
 #endif
 
@@ -1012,8 +1013,11 @@ namespace hooks {
 // thread_local, but for the sake of brevity, we lump together all versions
 // of Apple platforms that aren't macOS. If an iOS application really needs
 // the context pointee someday, we can get more specific then...
+//
+// As per https://github.com/google/re2/issues/325, thread_local support in
+// MinGW seems to be buggy. (FWIW, Abseil folks also avoid it.)
 #define RE2_HAVE_THREAD_LOCAL
-#if defined(__APPLE__) && !TARGET_OS_OSX
+#if (defined(__APPLE__) && !TARGET_OS_OSX) || defined(__MINGW32__)
 #undef RE2_HAVE_THREAD_LOCAL
 #endif
 
