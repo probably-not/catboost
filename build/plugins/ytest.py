@@ -30,6 +30,10 @@ VALID_DNS_REQUIREMENTS = ("default", "local", "dns64")
 BLOCK_SEPARATOR = '============================================================='
 SPLIT_FACTOR_MAX_VALUE = 1000
 PARTITION_MODS = ('SEQUENTIAL', 'MODULO')
+DEFAULT_TIDY_CONFIG = "build/config/tests/clang_tidy/config.yaml"
+TIDY_CONFIG_MAP_PATH = "build/yandex_specific/config/clang_tidy/tidy_project_map.json"
+
+tidy_config_map = None
 
 def ontest_data(unit, *args):
     ymake.report_configure_error("TEST_DATA is removed in favour of DATA")
@@ -359,6 +363,15 @@ def match_coverage_extractor_requirements(unit):
     ])
 
 
+def get_tidy_config_map(unit):
+    global tidy_config_map
+    if tidy_config_map is None:
+        config_map_path = unit.resolve(os.path.join("$S", TIDY_CONFIG_MAP_PATH))
+        with open(config_map_path, 'r') as afile:
+            tidy_config_map = json.load(afile)
+    return tidy_config_map
+
+
 def onadd_ytest(unit, *args):
     keywords = {"DEPENDS": -1, "DATA": -1, "TIMEOUT": 1, "FORK_MODE": 1, "SPLIT_FACTOR": 1,
                 "FORK_SUBTESTS": 0, "FORK_TESTS": 0}
@@ -381,13 +394,33 @@ def onadd_ytest(unit, *args):
         return
     elif flat_args[1] == "no.test":
         return
+    test_size = ''.join(spec_args.get('SIZE', [])) or unit.get('TEST_SIZE_NAME') or ''
+    test_tags = serialize_list(_get_test_tags(unit, spec_args))
+    test_timeout = ''.join(spec_args.get('TIMEOUT', [])) or unit.get('TEST_TIMEOUT') or ''
 
     if flat_args[1] != "clang_tidy" and unit.get("TIDY") == "yes":
         # graph changed for clang_tidy tests
         if flat_args[1] in ("unittest.py", "gunittest", "g_benchmark"):
             flat_args[1] = "clang_tidy"
+            test_size = 'SMALL'
+            test_tags = ''
+            test_timeout = "60"
         else:
             return
+
+    if flat_args[1] == "clang_tidy" and unit.get("TIDY") == "yes":
+        if not unit.get("TIDY_CONFIG"):
+            tidy_map = get_tidy_config_map(unit)
+            unit_path = get_norm_unit_path(unit)
+            for k, v in tidy_map.items():
+                if unit_path.startswith(k):
+                    # Remove after release project configs
+                    assert v.startswith("devtools/dummy_arcadia/example_tidy_project")
+                    assert k.startswith("devtools/dummy_arcadia/example_tidy_project")
+                    unit.set(["TIDY_CONFIG", v])
+                    break
+            else:
+                unit.set(["TIDY_CONFIG", DEFAULT_TIDY_CONFIG])
 
     fork_mode = []
     if 'FORK_SUBTESTS' in spec_args:
@@ -414,11 +447,11 @@ def onadd_ytest(unit, *args):
         'TEST-ENV': prepare_env(unit.get("TEST_ENV_VALUE")),
         #  'TEST-PRESERVE-ENV': 'da',
         'TEST-DATA': serialize_list(test_data),
-        'TEST-TIMEOUT': ''.join(spec_args.get('TIMEOUT', [])) or unit.get('TEST_TIMEOUT') or '',
+        'TEST-TIMEOUT': test_timeout,
         'FORK-MODE': fork_mode,
         'SPLIT-FACTOR': ''.join(spec_args.get('SPLIT_FACTOR', [])) or unit.get('TEST_SPLIT_FACTOR') or '',
-        'SIZE': ''.join(spec_args.get('SIZE', [])) or unit.get('TEST_SIZE_NAME') or '',
-        'TAG': serialize_list(_get_test_tags(unit, spec_args)),
+        'SIZE': test_size,
+        'TAG': test_tags,
         'REQUIREMENTS': serialize_list(spec_args.get('REQUIREMENTS', []) + get_values_list(unit, 'TEST_REQUIREMENTS_VALUE')),
         'TEST-CWD': unit.get('TEST_CWD_VALUE') or '',
         'FUZZ-DICTS': serialize_list(spec_args.get('FUZZ_DICTS', []) + get_unit_list_variable(unit, 'FUZZ_DICTS_VALUE')),
@@ -519,10 +552,12 @@ def onadd_check(unit, *args):
         script_rel_path = check_type
 
     use_arcadia_python = unit.get('USE_ARCADIA_PYTHON')
-
-    if check_type == "check.data":
+    uid_ext = ''
+    if check_type in ("check.data", "check.resource"):
         if unit.get("VALIDATE_DATA") == "no":
             return
+    if check_type == "check.data":
+        uid_ext = unit.get("SBR_UID_EXT").split(" ", 1)[-1]  # strip variable name
         data_re = re.compile(r"sbr:/?/?(\d+)=?.*")
         data = flat_args[1:]
         resources = []
@@ -545,6 +580,7 @@ def onadd_check(unit, *args):
         'SOURCE-FOLDER-PATH': test_dir,
         'CUSTOM-DEPENDENCIES': " ".join(spec_args.get('DEPENDS', [])),
         'TEST-DATA': extra_test_data,
+        "SBR-UID-EXT": uid_ext,
         'SPLIT-FACTOR': '',
         'TEST_PARTITION': 'SEQUENTIAL',
         'FORK-MODE': fork_mode,

@@ -14,7 +14,8 @@ ALLOW quality/deprecated/mapreducelib -> kikimr/library/sched/dev/supp/pages/lib
 ALLOW solomon/ -> kikimr/core/protos
 ALLOW solomon/ -> kikimr/public/lib/deprecated/kicli
 ALLOW solomon/ -> kikimr/library/mkql_proto/protos
-ALLOW solomon/ -> kikimr/streaming/libs/config/proto
+ALLOW solomon/ -> kikimr/yq/libs/config/protos
+ALLOW solomon/ -> kikimr/library/folder_service/proto
 ALLOW solomon/ -> kikimr/library/login/protos
 # temporary (FIXME: gvit)
 ALLOW yweb/robot/fetcher/generic_actors -> kikimr/core/protos
@@ -116,6 +117,7 @@ ALLOW logbroker/config-manager -> kikimr/core/util
 ALLOW logbroker/config-manager -> kikimr/library/persqueue/topic_parser
 ALLOW logbroker/config-manager -> kikimr/public/lib/deprecated/kicli
 ALLOW logbroker/config-manager -> kikimr/library/security
+ALLOW logbroker/config-manager -> kikimr/yndx/security
 ALLOW logbroker/config-manager -> kikimr/core/testlib
 
 ALLOW logbroker/push-agent/ut -> kikimr/core/testlib
@@ -134,7 +136,7 @@ ALLOW logbroker/tools -> kikimr/tools/monitoring
 ALLOW solomon/ -> kikimr/core/protos
 ALLOW solomon/ -> kikimr/public/lib/deprecated/kicli
 ALLOW solomon/ -> kikimr/library/mkql_proto/protos
-ALLOW solomon/ -> kikimr/streaming/libs/config/proto
+ALLOW solomon/ -> kikimr/yq/libs/config/protos
 ALLOW solomon/ -> kikimr/library/login/protos
 
 ALLOW yql/providers/dq/actors -> kikimr/core/base
@@ -155,7 +157,7 @@ ALLOW yql/dq/actors/compute -> kikimr/core/protos
 ALLOW yql/ -> kikimr/library/mkql_proto
 ALLOW yql/ -> kikimr/library/binary_json
 ALLOW yql/ -> kikimr/library/dynumber
-ALLOW yql/ -> kikimr/public/lib/security
+ALLOW yql/ -> kikimr/yndx/security
 
 ALLOW yql/providers/ydb -> kikimr/yq
 ALLOW yql/providers/ydb -> kikimr/public/lib/experimental

@@ -49,8 +49,12 @@ PEERDIR(
 
 GENERATE_ENUM_SERIALIZATION(model_metainfo_helpers.h)
 
-IF(CATBOOST_OPENSOURCE)
-    NO_GPL()
+IF(OPENSOURCE)
+    RESTRICT_LICENSES(
+        DENY REQUIRE_DISCLOSURE FORBIDDEN
+        EXCEPT
+            contrib/libs/linux-headers # ARCADIAWGSUP-12
+    )
 ELSE()
     PEERDIR(
         catboost//private/libs/for_app
@@ -63,7 +67,7 @@ ELSE()
     ALLOCATOR(MIM)
 ENDIF()
 
-IF (CATBOOST_OPENSOURCE AND AUTOCHECK)
+IF (OPENSOURCE AND AUTOCHECK)
     INCLUDE(${ARCADIA_ROOT}/catboost//oss/checks/check_deps.inc)
 ENDIF()
 

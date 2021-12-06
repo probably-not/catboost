@@ -8,6 +8,7 @@ direct/frontend
 direct/frontend-packages
 direct/yfa
 drive/pyback
+fintech/frontend
 frontend
 games/frontend
 junk
@@ -16,3 +17,4 @@ maps/front
 mobile
 music/frontend
 serp/hermione
+zen/frontend

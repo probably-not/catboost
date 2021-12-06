@@ -142,7 +142,7 @@ ALLOW market/sre/tools/cs_mysql_monitoring/mysql_monitoring -> contrib/python/My
 ALLOW metrika/core/monitoring/mobile-logs-api-export-generator-check -> contrib/python/MySQL-python
 ALLOW passport/python/grants_configurator -> contrib/python/MySQL-python
 ALLOW passport/python/social -> contrib/python/MySQL-python
-ALLOW passport/python/yasms/db -> contrib/python/MySQL-python
+ALLOW passport/infra/daemons/yasmsapi/db -> contrib/python/MySQL-python
 ALLOW testenv/core -> contrib/python/MySQL-python
 ALLOW testenv/recipes/ut -> contrib/python/MySQL-python
 # avia task to migrate from MySQL-python https://st.yandex-team.ru/RASPTICKETS-18201
@@ -259,8 +259,8 @@ ALLOW travel/avia -> contrib/python/pymqi
 DENY .* -> contrib/python/pymqi
 
 # https://st.yandex-team.ru/CONTRIB-1839
-ALLOW datalens/backend/app/dls -> contrib/python/Quart
-DENY .* -> contrib/python/Quart
+ALLOW datalens/backend/app/dls -> contrib/python/quart
+DENY .* -> contrib/python/quart
 
 # https://st.yandex-team.ru/CONTRIB-2012
 ALLOW maps/geomarketing -> contrib/python/facebook-business
@@ -344,7 +344,7 @@ ALLOW cloud/support/mdb-support-bot -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW contrib/python/databases -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW contrib/python/fastapi-utils -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW contrib/python/gino -> contrib/python/sqlalchemy/sqlalchemy-1.2
-ALLOW contrib/python/graphene-sqlalchemy/graphene_sqlalchemy/tests -> contrib/python/sqlalchemy/sqlalchemy-1.2
+ALLOW contrib/python/graphene-sqlalchemy/tests -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW contrib/python/luigi -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW contrib/python/sentry-sdk/sentry_sdk/integrations/sqlalchemy -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW contrib/python/sqlalchemy/sqlalchemy-1.2/sqlalchemy/testing -> contrib/python/sqlalchemy/sqlalchemy-1.2
@@ -541,7 +541,7 @@ ALLOW passport/python/vault/api/tests/models -> contrib/python/sqlalchemy/sqlalc
 ALLOW passport/python/vault/api/tests/views/secrets -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW passport/python/vault/api/tests/views -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW passport/python/vault/api -> contrib/python/sqlalchemy/sqlalchemy-1.2
-ALLOW passport/python/yasms/db -> contrib/python/sqlalchemy/sqlalchemy-1.2
+ALLOW passport/infra/daemons/yasmsapi/db -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW quality/ab_testing/scripts/ems -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW quality/ab_testing/tools/postgres_local/tests_recipe -> contrib/python/sqlalchemy/sqlalchemy-1.2
 ALLOW quality/ab_testing/tools/postgres_local -> contrib/python/sqlalchemy/sqlalchemy-1.2

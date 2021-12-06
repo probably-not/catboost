@@ -1099,6 +1099,7 @@ cdef extern from "catboost/private/libs/hyperparameter_tuning/hyperparameter_tun
 cdef extern from "catboost/libs/features_selection/select_features.h" namespace "NCB":
     cdef TJsonValue SelectFeatures(
         const TJsonValue& params,
+        const TMaybe[TCustomMetricDescriptor]& evalMetricDescriptor,
         const TDataProviders& pools,
         TFullModel* dstModel,
         const TVector[TEvalResult*]& testApproxes,
@@ -1998,7 +1999,8 @@ cdef TFeaturesLayout* _init_features_layout(
     cat_features,
     text_features,
     embedding_features,
-    feature_names
+    feature_names,
+    feature_tags
 ) except*:
     cdef TVector[ui32] cat_features_vector
     cdef TVector[ui32] text_features_vector
@@ -2021,6 +2023,12 @@ cdef TFeaturesLayout* _init_features_layout(
     if feature_names is not None:
         for feature_name in feature_names:
             feature_names_vector.push_back(to_arcadia_string(str(feature_name)))
+
+    if feature_tags is not None:
+        for tag_name in feature_tags:
+            tag_key = to_arcadia_string(str(tag_name))
+            list_to_vector(feature_tags[tag_name]['features'], &feature_tags_map[tag_key].Features)
+            feature_tags_map[tag_key].Cost = feature_tags[tag_name]['cost']
 
     all_features_are_sparse = False
     if isinstance(data, SPARSE_MATRIX_TYPES):
@@ -3753,7 +3761,7 @@ cdef class _PoolBase:
 
 
     cpdef _init_pool(self, data, label, cat_features, text_features, embedding_features, pairs, weight,
-                     group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names,
+                     group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, feature_tags,
                      thread_count):
         if group_weight is not None and weight is not None:
             raise CatBoostError('Pool must have either weight or group_weight.')
@@ -3779,7 +3787,8 @@ cdef class _PoolBase:
             cat_features,
             text_features,
             embedding_features,
-            feature_names
+            feature_names,
+            feature_tags
         )
 
         do_use_raw_data_in_features_order = False
@@ -5014,6 +5023,7 @@ cdef class _CatBoost:
             try:
                 summary_json = SelectFeatures(
                     prep_params.tree,
+                    prep_params.customMetricDescriptor,
                     dataProviders,
                     self.__model,
                     self.__test_evals,

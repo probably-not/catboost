@@ -7,7 +7,6 @@ migrations:
     - addappter/backend/testing/fixtures/configuration/ios
     - adfox/amacs/tests/functional/tests_amacs/bugs/medium
     - adfox/amacs/tests/functional/tests_amacs/dynamic_monetization/v2
-    - adfox/amacs/tests/functional/tests_amacs/targeting/referrer
     - adfox/amacs/tests/functional/tests_amacs/targeting/targeting_logic_tree_puids
     - adfox/amacs/tests/functional/utils
     - adfox/amacs/tests/functional/utils/db
@@ -185,7 +184,6 @@ migrations:
     - dict/ontodb/onto_lib/sources/transfermarkt
     - dict/ontodb/onto_lib/sources/www
     - dict/ontodb/ontodb_log/ctr
-    - dict/ontodb/pra/lib
     - dict/ontodb/report/common
     - dict/ontodb/report/film_stuff
     - dict/ontodb/schema
@@ -343,7 +341,6 @@ migrations:
     - extsearch/video/robot/hostsdb/tool/config/add_rules
     - extsearch/video/robot/rt_transcoder/metarobot/tests
     - extsearch/video/robot/rt_transcoder/transcoder/tests
-    - extsearch/ymusic/scripts/reindex
     - haas/cmis/hwr_allocation
     - haas/cmis/hwr_allocation/allocation_methods
     - health/articles/articles_pipeline
@@ -369,7 +366,6 @@ migrations:
     - infra/porto/api_py
     - infra/portoshell
     - infra/portoshell/src
-    - infra/qyp/vmagent/src
     - infra/qyp/vmctl/src
     - infra/reconf_juggler/tools/jdiff/tests
     - infra/rtc/janitor
@@ -405,13 +401,9 @@ migrations:
     - maps/analyzer/pylibs/watchman_api/lib
     - maps/automotive/proxy/config_generator
     - maps/automotive/remote_access/autotests/tests/data_types
-    - maps/b2bgeo/apikeys_billing/preprocess_geosaas_logs
     - maps/b2bgeo/mvrp_solver/backend/tests_lib
-    - maps/b2bgeo/test_lib/tests
-    - maps/b2bgeo/tools/release_notes
     - maps/carparks/regression/renderer/generate_ammo
     - maps/carparks/tools/route_lost_viewer/bin
-    - maps/infra/ecstatic/common/worker/lib
     - maps/infra/monitoring/sla_calculator/core/services
     - maps/jams/renderer2/common/ecstatic/lib
     - maps/mobile/server/tools/cache_deprecator
@@ -474,7 +466,6 @@ migrations:
     - modadvert/programs/saas_indexer/libs
     - modadvert/programs/transfer_manager/libs
     - modadvert/programs/update_flags_offline/tables_manager/libs
-    - mssngr/router/tests/lib
     - mssngr/router/tools/state_cache_updater_v2
     - opensource/sync/bin/arc2git
     - opensource/sync/bin/git2git
@@ -495,7 +486,6 @@ migrations:
     - passport/python/core/serializers/base
     - passport/python/core/suggest
     - passport/python/core/types
-    - passport/python/library/yt_hdb/loader
     - portal/tools/morda-release/server
     - quality/ab_testing/abt_resources_lib/loaders/tests/long_metrics
     - quality/ab_testing/cofe/bin/cofe_ctl
@@ -865,7 +855,6 @@ migrations:
     - yweb/antiporno/query_analyzer/porn_query_config_parser
     - yweb/antiporno/site_reachability/lib/reachability_common
     - yweb/antiporno/top_queries_cleanup/yql/test
-    - yweb/antispam/adblock/viewer
     - yweb/antispam/clean_web/tools/run_cm_targets
     - yweb/antispam/mascot/scripts/tcinet
     - yweb/antispam/seo_masks/py/static_impl/ut
@@ -977,7 +966,6 @@ migrations:
     - dict/bert/make/lib/tasks
     - dict/mt/analytics/sentence_breaking/translate_human_eval_comparison
     - dict/mt/g2p/asr/graph
-    - dict/mt/make/tools/train_iterative_backtranslation
     - dict/ontodb/onto_lib/sources/wikidata
     - dict/ontodb/proto/direct/ut
     - dict/ontodb/utils/export_src_codes
@@ -1041,7 +1029,6 @@ migrations:
     - maps/automotive/qa/metrics/common/ut
     - maps/automotive/tools/statistics_auto/pylib/track_match_finder
     - maps/infra/apiteka/config_uploader/tests
-    - maps/infra/ecstatic/common/worker/lib
     - maps/infra/sedem/cli/tests/release
     - maps/infra/sedem/cli/tests/release/utils
     - maps/search/metrics/pipeline/geo/geocoder/lib
@@ -1207,7 +1194,6 @@ migrations:
     - yabs/server/cs/pylibs/dash_board
     - yabs/server/cs/pylibs/full_graph_plot
     - yabs/server/cs/pylibs/gantt_chart/lib
-    - yabs/server/cs/pylibs/import_actions
     - yabs/server/cs/pylibs/settings
     - yabs/server/test/ft/BSSERVER-13708
     - yabs/server/test/ft/BSSERVER-14014
@@ -1243,7 +1229,6 @@ migrations:
     - ads/watchman/contrib/flask-restplus-patched
     - ads/watchman/contrib/flask-restplus-patched/flask_restplus_patched
     - alice/analytics/utils/marty/run_nirvana_instance
-    - arc/tables_creation/tests
     - cloud/ai/speechkit/stt/tests/data_pipeline/join
     - cv/short2long/nirvana/lib
     - devtools/signer/signer
@@ -1323,14 +1308,12 @@ migrations:
     - alice/uniproxy/bin/send-digest
     - alice/uniproxy/tools/perf_results_parser
     - antirobot/tools/prepare_requests_cbb
-    - arc/backups/restore/tasklet
     - browser/infra/services/ci/backend/flakiness/migrations
     - clickhouse/utils/github
     - cv/imageproc/ocr/tools/nirvana/captcha_renderer
     - cv/short2long/nirvana/lib
     - cv/short2long/training/yt_load_highlights
     - dict/mt/analytics/make/tools/toloka/simple_toloka
-    - dict/mt/make/modules/corpus_generation/post_filtering/tests
     - dict/mt/make/modules/prepare_corpus
     - dict/mt/make/pipeline/nmt
     - dict/mt/make/pipeline/phrase_lm/tests
@@ -1384,7 +1367,6 @@ migrations:
     - maps/automotive/proxy/config_generator
     - maps/automotive/remote_tasks/autotests/tests
     - maps/automotive/remote_tasks/manager/regression/ammo_generator
-    - maps/b2bgeo/apikeys_billing/preprocess_mapkit_logs
     - maps/b2bgeo/tools/load_testing/lib
     - maps/doc/proto/yandex/maps/proto/factory/tests
     - maps/infopoint/statistics/lib
@@ -1576,7 +1558,6 @@ migrations:
     - yabs/server/test/ft/BSSERVER-14309
     - yabs/server/test/ft/BSSERVER-14556
     - yabs/server/test/ft/BSSERVER-2495
-    - yabs/server/test/pylibs/simulator
     - yabs/server/test/qabs_bsserver_pytest
     - yabs/utils/log_stats/test
     - yabs/vh/cms-pgaas/cms_common
@@ -1616,7 +1597,6 @@ migrations:
     - ads/nirvana/xfactor-yt
     - ads/tools/mx_feature_remapper
     - alice/analytics/utils/marty/run_nirvana_instance
-    - arc/tables_creation/tests
     - cloud/ai/speechkit/stt/tests/data_pipeline/join
     - devtools/signer/signer
     - dict/lm/sources/lib/launcher
@@ -1692,7 +1672,6 @@ migrations:
     - addappter/web/libs/tests
     - adfox/contrib/clickhouse
     - adfox/contrib/flask_jsonrpc
-    - adfox/contrib/rediscluster
     - adfox/infra/amacs_config/migrations
     - adfox/rtd/backend
     - adfox/rtd/bin
@@ -1885,7 +1864,6 @@ migrations:
     - dict/mt/make/modules/translit
     - dict/mt/make/modules/util
     - dict/mt/make/modules/voc
-    - dict/mt/make/processes/gen_cleanup_graph
     - dict/mt/make/tools/build_prob_dict
     - dict/mt/make/tools/corpus_classifier
     - dict/mt/make/tools/filter_corpus_by_rules
@@ -2077,7 +2055,6 @@ migrations:
     - ipreg/geogen-www/app/slow_search
     - ipreg/python/ipreg-diff/executive
     - ipreg/python/util
-    - juggler/sdk/juggler_sdk
     - keyboard/dict/learn_transfemes/pt_converter
     - keyboard/dict/learn_transfemes/word_aligner
     - keyboard/dict/lemmer_filter
@@ -2174,7 +2151,6 @@ migrations:
     - market/dynamic_pricing/price_collector/bin
     - market/dynamic_pricing/price_collector/lib
     - market/dynamic_pricing/tools/delivery_checker/bin
-    - market/dynamic_pricing/tools/delivery_checker/lib
     - market/dynamic_pricing/tools/hide_rules_exceptions/bin
     - market/dynamic_pricing/tools/kvi_evaluation/bin
     - market/forecaster/lite/core
@@ -2197,7 +2173,6 @@ migrations:
     - mds/elliptics/bindings/python
     - mds/elliptics/recovery/elliptics_recovery
     - mds/elliptics/tests/pytests
-    - mds/langoliers
     - mds/libs/eblob/tests/python
     - mds/libs/jerasure/python
     - mds/lrc-tools
@@ -2286,13 +2261,11 @@ migrations:
     - passport/python/contrib/elementflow
     - passport/python/contrib/formencode
     - passport/python/contrib/gsm0338
-    - passport/python/contrib/happybase
     - passport/python/contrib/nose_parameterized
     - passport/python/contrib/oauthlib
     - passport/python/contrib/py-radix
     - passport/python/contrib/py2casefold
     - passport/python/contrib/pyisemail
-    - passport/python/contrib/thriftpy
     - passport/python/core/yasms/test
     - passport/python/library/historydbloader
     - passport/python/logbroker_client/core
@@ -2995,7 +2968,6 @@ migrations:
     - yabs/umbrella/mapreduce_antifraud/rtb_antifraud_launcher
     - yabs/umbrella/mapreduce_antifraud/serp_no_clicks_users
     - yabs/vh/cms-pgaas/thumb_selector
-    - yandex_io/tests/fluent_bit
     - ydo/tools/spontaneous/feedback_requests
     - yql/cli
     - yql/library/python
@@ -3044,11 +3016,9 @@ migrations:
     - yweb/antiporno/queries_active_learning/work_with_markup_cache
     - yweb/antiporno/site_reachability/lib/retraversal_sites
     - yweb/antiporno/site_reachability/lib/spy_handling
-    - yweb/antispam/adblock/tools/ab2cd
     - yweb/antispam/phishing/lib/python
     - yweb/antispam/phishing/models/limixis_log_regression
     - yweb/antispam/phishing/screenshots_cbir/dnsdb_filter
-    - yweb/antispam/scout
     - yweb/antispam/util/scraper
     - yweb/antispam/whois/scripts
     - yweb/blender/newsletter/top_negative_intents
@@ -3205,7 +3175,6 @@ migrations:
     - dict/ext/pairfreq/findpairs3/tests/lemmatize
     - dict/gen_phrases/tests
     - dict/geninflnames/tests
-    - dict/mt/make/modules/corpus_generation/kwyt_html_parse/tests
     - dict/mt/make/tools/build_unigram_blacklist/tests
     - dict/mt/make/tools/lm_diff/tests
     - dict/mt/make/tools/make_cap_model/ut
@@ -3287,7 +3256,6 @@ migrations:
     - intranet/yandex_directory/tests
     - juggler/juggler_client/lib/tests
     - juggler/libjuggler/tests
-    - juggler/netmon/agent/tests/privileged
     - kernel/extended_mx_calcer/tools/calcers_test/tests
     - kernel/geo/tests/geo_utils/tests
     - kernel/title_ranges/test_title_ranges/tests
@@ -3455,7 +3423,6 @@ migrations:
     - rtmapreduce/mrtasks/create_market_requests/tests
     - rtmapreduce/mrtasks/images_freon_sample/tests
     - rtmapreduce/mrtasks/keyslist/tests
-    - rtmapreduce/mrtasks/logfeller_create_logs/tests
     - rtmapreduce/mrtasks/org_load/tests
     - rtmapreduce/mrtasks/orgvisits/tests
     - rtmapreduce/mrtasks/parselib_errors/tests
@@ -3675,7 +3642,6 @@ migrations:
     - yweb/yasap/pdb/pdb-backend/tests/lib/detected_objects
     - yweb/yasap/pdb/pdb-backend/tests/lib/its
     - yweb/yasap/pdb/pdb-backend/tests/lib/mds
-    - yweb/yasap/pdb/pdb-backend/tests/lib/messenger
     - yweb/yasap/pdb/pdb-backend/tests/lib/monit
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/avatars
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/boards/resources
@@ -3697,7 +3663,6 @@ migrations:
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/other
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/patch
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/samovar
-    - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/search
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/series
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/shares
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/source_types
@@ -3705,7 +3670,6 @@ migrations:
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cards/resources/wish
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/celery
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/clicks
-    - yweb/yasap/pdb/pdb-backend/tests/lib/podb/cmnt
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/comments
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/common
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/competitions
@@ -3716,17 +3680,14 @@ migrations:
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/export
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/favorites
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/langdetect
-    - yweb/yasap/pdb/pdb-backend/tests/lib/podb/likes
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/metrics
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/object_answers
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/object_tags
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/organizations
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/pages
-    - yweb/yasap/pdb/pdb-backend/tests/lib/podb/recipes
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/shares
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/stats
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/subscriptions
-    - yweb/yasap/pdb/pdb-backend/tests/lib/podb/suggest
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/tasks
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/toloka
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/ugcdb
@@ -3734,7 +3695,6 @@ migrations:
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/user/resources
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/yauth
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb/ydb
-    - yweb/yasap/pdb/pdb-backend/tests/lib/podb/zen
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb_admin/actions/tasks
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb_admin/boards
     - yweb/yasap/pdb/pdb-backend/tests/lib/podb_admin/comments
@@ -3758,7 +3718,6 @@ migrations:
     - yweb/yasap/pdb/pdb-backend/tests/lib/sb
     - yweb/yasap/pdb/pdb-backend/tests/lib/videosearch
     - yweb/yasap/pdb/pdb-backend/tests/lib/ydb
-    - yweb/yasap/pdb/pdb-backend/tests/lib/zen
     - yweb/yasap/pdb/quality/profile/action_v2/rtmr/tests
     - yweb/yasap/pdb/quality/profile/fresh_profiles/event_log_converter_rtmr/tests
     - yweb/yasap/pdb/quality/profile/redir_actions/rtmr_redir_actions/tests
@@ -3805,7 +3764,6 @@ migrations:
     - balancer/test/functional/antirobot
     - balancer/test/functional/h100
     - balancer/test/functional/errordocument
-    - balancer/test/functional/log_headers
     - balancer/test/functional/active_check_reply
     - balancer/test/functional/rendezvous_hashing
     - balancer/test/functional/consistent_hashing

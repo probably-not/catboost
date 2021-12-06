@@ -31,6 +31,7 @@ from catboost import (
     to_ranker,
     MultiTargetCustomMetric,
     MultiTargetCustomObjective,)
+from catboost.core import is_maximizable_metric, is_minimizable_metric
 from catboost.eval.catboost_evaluation import CatboostEvaluation, EvalType
 from catboost.utils import eval_metric, create_cd, read_cd, get_roc_curve, select_threshold, quantize
 from catboost.utils import DataMetaInfo, TargetStats, compute_training_options
@@ -1219,7 +1220,7 @@ def test_save_load_equality(task_type):
             {'dictionary_id': 'BiGram', 'token_level_type': 'Letter', 'occurrence_lower_bound': '1', 'gram_order': '2'},
             {'dictionary_id': 'Word', 'occurrence_lower_bound': '1'},
         ],
-        'feature_calcers': ['NaiveBayes', 'BoW'],
+        'feature_calcers': ['NaiveBayes', 'BoW:top_tokens_count=10'],
         'iterations': 10,
         'loss_function': 'MultiClass',
         'task_type': task_type,
@@ -1307,7 +1308,7 @@ def test_fit_with_texts(task_type):
             {'dictionary_id': 'BiGram', 'token_level_type': 'Letter', 'occurrence_lower_bound': '1', 'gram_order': '2'},
             {'dictionary_id': 'Word', 'occurrence_lower_bound': '1'},
         ],
-        'feature_calcers': ['NaiveBayes', 'BoW'],
+        'feature_calcers': ['NaiveBayes', 'BoW:top_tokens_count=10'],
         'iterations': 100,
         'loss_function': 'MultiClass',
         'task_type': task_type,
@@ -2706,8 +2707,10 @@ def test_generated_metrics():
 def test_metrics_is_min_max_optimal():
     logloss = metrics.Logloss()
     assert logloss.is_min_optimal() and not logloss.is_max_optimal()
+    assert is_minimizable_metric('Logloss') and not is_maximizable_metric('Logloss')
     auc = metrics.AUC()
     assert auc.is_max_optimal() and not auc.is_min_optimal()
+    assert is_maximizable_metric('AUC') and not is_minimizable_metric('AUC')
 
 
 def test_custom_eval():
@@ -9380,6 +9383,39 @@ def test_different_formats_of_feature_weights():
             cv(train_pool, params=dict(common_options, **{'feature_weights': feature_weights}))
 
 
+def test_feature_tags_interface():
+    data = np.arange(80).reshape((10, 8))
+    label = np.arange(10) % 2
+    pool = Pool(
+        data,
+        label=label,
+        feature_names=["c_0", "c_1", "c_2", "num_3", "c_4", "c_5", "c_6", "num_7"],
+        feature_tags={
+            "tag1" : {
+                "features": np.arange(4),
+                "cost": 5
+            },
+            "tag2": {"features": ["num_3", "num_7"]},
+            "tag3" : {"features": [4, 5]}
+        }
+    )
+    cat = CatBoostClassifier(ignored_features=["#tag1", "#tag2"])
+    cat.fit(pool)
+    assert np.array_equal(np.where(cat.feature_importances_ == 0)[0], [0, 1, 2, 3, 7])
+    cat = CatBoostClassifier()
+    result = cat.select_features(
+        pool,
+        features_for_select=["#tag1", "#tag2"],
+        num_features_to_select=3
+    )
+    assert all(x in [0, 1, 2, 3, 7] for x in result["selected_features"])
+    assert all(x in [0, 1, 2, 3, 7] for x in result["eliminated_features"])
+    with pytest.raises(CatBoostError):
+        Pool(data, feature_tags={"features": [4, 5]})
+    with pytest.raises(CatBoostError):
+        Pool(data, feature_tags={"tag2": {"features": ["num_3", "num_4"]}})
+
+
 def test_first_feature_use_penalties_work():
     pool = Pool(AIRLINES_5K_TRAIN_FILE, column_description=AIRLINES_5K_CD_FILE, has_header=True)
     most_important_feature_index = 3
@@ -9971,3 +10007,33 @@ def test_select_features(task_type, train_final_model):
         assert not model.is_fitted()
         assert model.best_score_ == {}
         assert model.evals_result_ == {}
+
+
+def test_select_features_with_custom_eval_metric():
+    class CustomMetric(object):
+        def get_final_error(self, error, weight):
+            return 0.35
+
+        def is_max_optimal(self):
+            return True
+
+        def evaluate(self, approxes, target, weight):
+            return (0.0, 0.0)
+
+    learn = Pool(TRAIN_FILE, column_description=CD_FILE)
+    test = Pool(TEST_FILE, column_description=CD_FILE)
+    model = CatBoostClassifier(
+        iterations=10,
+        learning_rate=0.03,
+        use_best_model=False,
+        eval_metric=CustomMetric()
+    )
+    model.select_features(
+        learn,
+        eval_set=test,
+        steps=1,
+        train_final_model=True,
+        features_for_select='0-16',
+        num_features_to_select=10
+    )
+    assert model.best_score_['validation']['CustomMetric'] == 0.35

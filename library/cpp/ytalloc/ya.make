@@ -5,6 +5,7 @@ IF (NOT OS_DARWIN AND NOT SANITIZER_TYPE)
 ENDIF()
 
 RECURSE(
+    api
     core
 )
 

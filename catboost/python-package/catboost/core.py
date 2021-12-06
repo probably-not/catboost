@@ -61,6 +61,8 @@ is_multitarget_objective = _catboost.is_multitarget_objective
 is_survivalregression_objective = _catboost.is_survivalregression_objective
 is_groupwise_metric = _catboost.is_groupwise_metric
 is_ranking_metric = _catboost.is_ranking_metric
+is_maximizable_metric = _catboost.is_maximizable_metric
+is_minimizable_metric = _catboost.is_minimizable_metric
 _PreprocessParams = _catboost._PreprocessParams
 _check_train_params = _catboost._check_train_params
 _MetadataHashProxy = _catboost._MetadataHashProxy
@@ -447,6 +449,7 @@ class Pool(_PoolBase):
         baseline=None,
         timestamp=None,
         feature_names=None,
+        feature_tags=None,
         thread_count=-1,
         log_cout=sys.stdout,
         log_cerr=sys.stderr
@@ -550,6 +553,20 @@ class Pool(_PoolBase):
               from DataFrame's column names.
             Must be None if 'data' parameter has FeaturesData type
 
+        feature_tags : json, optional (default=None)
+            Format:
+            {'tag1':
+                {
+                    'features': [<ids or names of features>],
+                    'cost': <positive integer>
+                }
+             'tag2':
+                {
+                 ...
+                }
+            ...
+            }
+
         thread_count : int, optional (default=-1)
             Thread count for data processing.
             If -1, then the number of threads is set to the number of CPU cores.
@@ -625,7 +642,8 @@ class Pool(_PoolBase):
                         "python objects."
                     )
 
-                self._init(data, label, cat_features, text_features, embedding_features, pairs, weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, thread_count)
+                self._init(data, label, cat_features, text_features, embedding_features, pairs, weight,
+                           group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, feature_tags, thread_count)
         super(Pool, self).__init__()
 
     def _check_files(self, data, column_description, pairs):
@@ -829,6 +847,36 @@ class Pool(_PoolBase):
         """
         if not isinstance(timestamp, ARRAY_TYPES):
             raise CatBoostError("Invalid timestamp type={}: must be array like.".format(type(timestamp)))
+
+    def _check_transform_tags(self, tags, feature_names):
+        if not isinstance(tags, dict):
+            raise CatBoostError("Invalid feature_tags type={}: must be dict like.".format(type(tags)))
+        for tag_name, tag_features in tags.items():
+            if not isinstance(tag_features, dict):
+                raise CatBoostError("Invalid type of value in feature_tags by key {}, value type is {}: must be dict like.".format(tag_name, type(tag_features)))
+            if 'features' not in tag_features:
+                raise CatBoostError("Invalid value in feature_tags by key {}, key 'features' is needed.".format(tag_name))
+            if not isinstance(tag_features['features'], ARRAY_TYPES):
+                raise CatBoostError("Invalid type of value in feature_tags by key {}, value type of features is {}: must be array like.".format(tag_name, type(tag_features['features'])))
+            if 'cost' not in tag_features:
+                tag_features['cost'] = 1.0
+            else:
+                if not isinstance(tag_features['cost'], (INTEGER_TYPES, str)):
+                    raise CatBoostError("Invalid type of value in feature_tags by key {}, value type of cost is {}: must be integer.".format(tag_name, type(tag_features['cost'])))
+                tag_features['cost'] = int(tag_features['cost'])
+
+            for idx in range(len(tag_features['features'])):
+                if isinstance(tag_features['features'][idx], INTEGER_TYPES):
+                    pass
+                elif isinstance(tag_features['features'][idx], str) and feature_names is not None:
+                    try:
+                        feature_id = feature_names.index(tag_features['features'][idx])
+                    except ValueError:
+                        raise CatBoostError("Unknown feature in tag {}: {}".format(tag_name, tag_features['features'][idx]))
+                    tag_features['features'][idx] = feature_id
+                else:
+                    raise CatBoostError("Invalid type of feature in tag {}, value type is {}: must be int or feature name.".format(tag_name, type(tag_features['features'][idx])))
+        return tags
 
     def _check_timestamp_shape(self, timestamp, samples_count):
         """
@@ -1094,6 +1142,7 @@ class Pool(_PoolBase):
         baseline,
         timestamp,
         feature_names,
+        feature_tags,
         thread_count
     ):
         """
@@ -1168,7 +1217,10 @@ class Pool(_PoolBase):
             self._check_timestamp_type(timestamp)
             timestamp = self._if_pandas_to_numpy(timestamp)
             self._check_timestamp_shape(timestamp, samples_count)
-        self._init_pool(data, label, cat_features, text_features, embedding_features, pairs, weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, thread_count)
+        if feature_tags is not None:
+            feature_tags = self._check_transform_tags(feature_tags, feature_names)
+        self._init_pool(data, label, cat_features, text_features, embedding_features, pairs, weight,
+                        group_id, group_weight, subgroup_id, pairs_weight, baseline, timestamp, feature_names, feature_tags, thread_count)
 
 
 def _build_train_pool(X, y, cat_features, text_features, embedding_features, pairs, sample_weight, group_id, group_weight, subgroup_id, pairs_weight, baseline, column_description):
@@ -1260,7 +1312,7 @@ def _process_synonyms(params):
 
     if 'scale_pos_weight' in params:
         if 'loss_function' in params and params['loss_function'] != 'Logloss':
-                raise CatBoostError('scale_pos_weight is supported only for binary classification Logloss loss')
+            raise CatBoostError('scale_pos_weight is supported only for binary classification Logloss loss')
         if 'class_weights' in params or 'auto_class_weights' in params:
             raise CatBoostError('only one of the parameters scale_pos_weight, class_weights, auto_class_weights should be initialized.')
         params['class_weights'] = [1.0, params['scale_pos_weight']]
@@ -3412,10 +3464,10 @@ class CatBoost(_CatBoostBase):
             cat_feature_values = {}
         else:
             if not isinstance(cat_feature_values, dict):
-                if isinstance(features, list):
+                if isinstance(feature, list):
                     raise CatBoostError('cat_feature_values should be dict when features is a list')
                 else:
-                    cat_feature_values = {features: cat_feature_values}
+                    cat_feature_values = {feature: cat_feature_values}
 
         if isinstance(feature, str) or isinstance(feature, int):
             features = [feature]
