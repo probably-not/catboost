@@ -7,7 +7,7 @@ VERSION(5.9.0)
 
 
 PEERDIR(
-    contrib/python/backports-shutil_get_terminal_size
+    contrib/python/backports.shutil-get-terminal-size
     contrib/python/decorator
     contrib/python/pickleshare
     contrib/python/simplegeneric
@@ -21,12 +21,8 @@ PEERDIR(
 IF (OS_WINDOWS)
     PEERDIR(
         contrib/python/colorama
+        contrib/python/win_unicode_console
     )
-    IF (PYTHON2)
-        PEERDIR(
-            contrib/python/win_unicode_console
-        )
-    ENDIF()
 ELSE ()
     PEERDIR(
         contrib/python/pexpect
@@ -265,6 +261,8 @@ PY_SRCS(
 
 RESOURCE_FILES(
     PREFIX contrib/python/ipython/py2/
+    .dist-info/METADATA
+    .dist-info/top_level.txt
     IPython/core/profile/README_STARTUP
 )
 

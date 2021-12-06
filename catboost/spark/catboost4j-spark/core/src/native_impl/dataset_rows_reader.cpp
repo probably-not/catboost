@@ -171,6 +171,15 @@ public:
     void AddSubgroupId(ui32 localObjectIdx, TSubgroupId value) override {
         Rows[localObjectIdx].SubgroupId = reinterpret_cast<const i32&>(value);
     }
+    void AddGroupId(ui32 /*localObjectIdx*/, const TString& /*value*/) override {
+        CB_ENSURE_INTERNAL(false, "unsupported function");
+    }
+    void AddSubgroupId(ui32 /*localObjectIdx*/, const TString& /*value*/) override {
+        CB_ENSURE_INTERNAL(false, "unsupported function");
+    }
+    void AddSampleId(ui32 /*localObjectIdx*/, const TString& /*value*/) override {
+        CB_ENSURE_INTERNAL(false, "unsupported function");
+    }
     void AddTimestamp(ui32 localObjectIdx, ui64 value) override {
         Rows[localObjectIdx].Timestamp = SafeIntegerCast<i64>(value);
     }
@@ -336,7 +345,7 @@ TRawDatasetRowsReader::TRawDatasetRowsReader(
     bool hasHeader,
     i32 blockSize,
     i32 threadCount
-) throw (yexception) {
+) {
     THolder<ILineDataReader> lineReaderHolder(lineReader);
 
     CB_ENSURE(threadCount >= 1, "threadCount must be >= 1");
@@ -372,6 +381,8 @@ TRawDatasetRowsReader::TRawDatasetRowsReader(
             EObjectsOrder::Undefined,
             SafeIntegerCast<ui32>(blockSize),
             /*loadSubset*/ TDatasetSubset(),
+            /*LoadColumnsAsString*/ false,
+            /*ForceUnitAutoPairWeights*/ false,
             &LocalExecutor
         }
     };
@@ -391,7 +402,7 @@ TRawDatasetRowsReader::TRawDatasetRowsReader(
     VisitorHolder = std::move(visitorHolder);
 }
 
-i32 TRawDatasetRowsReader::ReadNextBlock() throw (yexception) {
+i32 TRawDatasetRowsReader::ReadNextBlock() {
     if (Loader->DoBlock(Visitor)) {
         return Visitor->GetBlockSize();
     } else {
@@ -399,7 +410,7 @@ i32 TRawDatasetRowsReader::ReadNextBlock() throw (yexception) {
     }
 }
 
-const TRawDatasetRow& TRawDatasetRowsReader::GetRow(i32 objectIdx) throw (yexception) {
+const TRawDatasetRow& TRawDatasetRowsReader::GetRow(i32 objectIdx) {
     return Visitor->GetRow(objectIdx);
 }
 

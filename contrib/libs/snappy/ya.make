@@ -6,7 +6,11 @@ LIBRARY()
 
 VERSION(1.1.8)
 
+ORIGINAL_SOURCE(https://github.com/google/snappy/archive/1.1.8.tar.gz)
+
 LICENSE(BSD-3-Clause)
+
+LICENSE_TEXTS(.yandex_meta/licenses.list.txt)
 
 ADDINCL(
     GLOBAL contrib/libs/snappy/include

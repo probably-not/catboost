@@ -98,6 +98,13 @@ namespace NCB {
             Data.TargetData.PrepareForInitialization(Data.MetaInfo, ObjectCount, prevTailSize);
             Data.CommonObjectsData.PrepareForInitialization(Data.MetaInfo, ObjectCount, prevTailSize);
             Data.ObjectsData.PrepareForInitialization(Data.MetaInfo);
+            Data.CommonObjectsData.SetBuildersArrayRef(
+                metaInfo,
+                &NumGroupIdsRef,
+                &StringGroupIdsRef,
+                &NumSubgroupIdsRef,
+                &StringSubgroupIdsRef
+            );
 
             Data.CommonObjectsData.ResourceHolders = std::move(resourceHolders);
             Data.CommonObjectsData.Order = objectsOrder;
@@ -155,11 +162,27 @@ namespace NCB {
 
         // TCommonObjectsData
         void AddGroupId(ui32 localObjectIdx, TGroupId value) override {
-            (*Data.CommonObjectsData.GroupIds)[Cursor + localObjectIdx] = value;
+            Y_ASSERT(!Data.CommonObjectsData.StoreStringColumns);
+            NumGroupIdsRef[Cursor + localObjectIdx] = value;
+        }
+
+        void AddGroupId(ui32 localObjectIdx, const TString& value) override {
+            Y_ASSERT(Data.CommonObjectsData.StoreStringColumns);
+            StringGroupIdsRef[Cursor + localObjectIdx] = value;
         }
 
         void AddSubgroupId(ui32 localObjectIdx, TSubgroupId value) override {
-            (*Data.CommonObjectsData.SubgroupIds)[Cursor + localObjectIdx] = value;
+            Y_ASSERT(!Data.CommonObjectsData.StoreStringColumns);
+            NumSubgroupIdsRef[Cursor + localObjectIdx] = value;
+        }
+
+        void AddSubgroupId(ui32 localObjectIdx, const TString& value) override {
+            Y_ASSERT(Data.CommonObjectsData.StoreStringColumns);
+            StringSubgroupIdsRef[Cursor + localObjectIdx] = value;
+        }
+
+        void AddSampleId(ui32 localObjectIdx, const TString& value) override {
+            (*Data.CommonObjectsData.SampleId)[Cursor + localObjectIdx] = value;
         }
 
         void AddTimestamp(ui32 localObjectIdx, ui64 value) override {
@@ -358,7 +381,7 @@ namespace NCB {
 
         // needed for checking groupWeights consistency while loading from separate file
         TMaybeData<TConstArrayRef<TGroupId>> GetGroupIds() const override {
-            return Data.CommonObjectsData.GroupIds;
+            return Data.CommonObjectsData.GroupIds.GetMaybeNumData();
         }
 
         void Finish() override {
@@ -405,14 +428,14 @@ namespace NCB {
                 if (Data.MetaInfo.HasWeights) {
                     Data.TargetData.Weights = TWeights<float>(
                         TVector<float>(WeightsBuffer),
-                        AsStringBuf("Weights"),
+                        TStringBuf("Weights"),
                         /*allWeightsCanBeZero*/ true
                     );
                 }
                 if (Data.MetaInfo.HasGroupWeight) {
                     Data.TargetData.GroupWeights = TWeights<float>(
                         TVector<float>(GroupWeightsBuffer),
-                        AsStringBuf("GroupWeights"),
+                        TStringBuf("GroupWeights"),
                         /*allWeightsCanBeZero*/ true
                     );
                 }
@@ -432,14 +455,14 @@ namespace NCB {
                 if (Data.MetaInfo.HasWeights) {
                     Data.TargetData.Weights = TWeights<float>(
                         std::move(WeightsBuffer),
-                        AsStringBuf("Weights"),
+                        TStringBuf("Weights"),
                         /*allWeightsCanBeZero*/ InBlock
                     );
                 }
                 if (Data.MetaInfo.HasGroupWeight) {
                     Data.TargetData.GroupWeights = TWeights<float>(
                         std::move(GroupWeightsBuffer),
-                        AsStringBuf("GroupWeights"),
+                        TStringBuf("GroupWeights"),
                         /*allWeightsCanBeZero*/ InBlock
                     );
                 }
@@ -487,6 +510,7 @@ namespace NCB {
                     /*objectsGrouping*/ Nothing(), // will init from data
                     std::move(Data),
                     Options.SkipCheck,
+                    Data.MetaInfo.ForceUnitAutoPairWeights,
                     LocalExecutor
                 );
 
@@ -519,6 +543,7 @@ namespace NCB {
                     /*objectsGrouping*/ Nothing(), // will init from data
                     std::move(Data),
                     Options.SkipCheck,
+                    Data.MetaInfo.ForceUnitAutoPairWeights,
                     LocalExecutor
                 )->CastMoveTo<TObjectsDataProvider>();
             }
@@ -536,6 +561,7 @@ namespace NCB {
                 /*objectsGrouping*/ Nothing(), // will init from data
                 std::move(Data),
                 Options.SkipCheck,
+                Data.MetaInfo.ForceUnitAutoPairWeights,
                 LocalExecutor
             );
 
@@ -559,19 +585,28 @@ namespace NCB {
         }
 
     private:
-        void RollbackNextCursorToLastGroupStart() {
-            const auto& groupIds = *Data.CommonObjectsData.GroupIds;
-            if (ObjectCount == 0) {
-                return;
-            }
+        template <class T>
+        inline void RollbackNextCursorToLastGroupStartImpl(const TVector<T>& groupIds) {
             auto rit = groupIds.rbegin();
-            TGroupId lastGroupId = *rit;
+            const T& lastGroupId = *rit;
             for (++rit; rit != groupIds.rend(); ++rit) {
                 if (*rit != lastGroupId) {
                     break;
                 }
             }
+            // always rollback to the second last group
             NextCursor = ObjectCount - (rit - groupIds.rbegin());
+        }
+
+        void RollbackNextCursorToLastGroupStart() {
+            if (ObjectCount == 0) {
+                return;
+            }
+            if (Data.CommonObjectsData.StoreStringColumns) {
+                RollbackNextCursorToLastGroupStartImpl(*Data.CommonObjectsData.GroupIds.GetMaybeStringData());
+            } else {
+                RollbackNextCursorToLastGroupStartImpl(*Data.CommonObjectsData.GroupIds.GetMaybeNumData());
+            }
         }
 
         template <EFeatureType FeatureType>
@@ -1024,6 +1059,11 @@ namespace NCB {
         TFeaturesStorage<EFeatureType::Text, TString> TextFeaturesStorage;
         TFeaturesStorage<EFeatureType::Embedding, TConstEmbedding> EmbeddingFeaturesStorage;
 
+        TArrayRef<TGroupId> NumGroupIdsRef;
+        TArrayRef<TString> StringGroupIdsRef;
+        TArrayRef<TSubgroupId> NumSubgroupIdsRef;
+        TArrayRef<TString> StringSubgroupIdsRef;
+
         std::array<THashPart, CB_THREAD_LIMIT> HashMapParts;
 
 
@@ -1081,6 +1121,13 @@ namespace NCB {
             Data.TargetData.PrepareForInitialization(metaInfo, ObjectCount, 0);
             Data.CommonObjectsData.PrepareForInitialization(metaInfo, ObjectCount, 0);
             Data.ObjectsData.PrepareForInitialization(metaInfo);
+            Data.CommonObjectsData.SetBuildersArrayRef(
+                metaInfo,
+                &NumGroupIdsRef,
+                &StringGroupIdsRef,
+                &NumSubgroupIdsRef,
+                &StringSubgroupIdsRef
+            );
 
             Data.CommonObjectsData.ResourceHolders = std::move(resourceHolders);
             Data.CommonObjectsData.Order = objectsOrder;
@@ -1092,11 +1139,27 @@ namespace NCB {
 
         // TCommonObjectsData
         void AddGroupId(ui32 objectIdx, TGroupId value) override {
-            (*Data.CommonObjectsData.GroupIds)[objectIdx] = value;
+            Y_ASSERT(!Data.CommonObjectsData.StoreStringColumns);
+            NumGroupIdsRef[objectIdx] = value;
         }
 
         void AddSubgroupId(ui32 objectIdx, TSubgroupId value) override {
-            (*Data.CommonObjectsData.SubgroupIds)[objectIdx] = value;
+            Y_ASSERT(!Data.CommonObjectsData.StoreStringColumns);
+            NumSubgroupIdsRef[objectIdx] = value;
+        }
+
+        void AddGroupId(ui32 objectIdx, const TString& value) override {
+            Y_ASSERT(Data.CommonObjectsData.StoreStringColumns);
+            StringGroupIdsRef[objectIdx] = value;
+        }
+
+        void AddSubgroupId(ui32 objectIdx, const TString& value) override {
+            Y_ASSERT(Data.CommonObjectsData.StoreStringColumns);
+            StringSubgroupIdsRef[objectIdx] = value;
+        }
+
+        void AddSampleId(ui32 objectIdx, const TString& value) override {
+            (*Data.CommonObjectsData.SampleId)[objectIdx] = value;
         }
 
         void AddTimestamp(ui32 objectIdx, ui64 value) override {
@@ -1248,7 +1311,7 @@ namespace NCB {
 
         // needed for checking groupWeights consistency while loading from separate file
         TMaybeData<TConstArrayRef<TGroupId>> GetGroupIds() const override {
-            return Data.CommonObjectsData.GroupIds;
+            return Data.CommonObjectsData.GroupIds.GetMaybeNumData();
         }
 
         void Finish() override {
@@ -1274,6 +1337,7 @@ namespace NCB {
                 /*objectsGrouping*/ Nothing(), // will init from data
                 std::move(Data),
                 Options.SkipCheck,
+                Data.MetaInfo.ForceUnitAutoPairWeights,
                 LocalExecutor
             )->CastMoveTo<TObjectsDataProvider>();
         }
@@ -1356,6 +1420,11 @@ namespace NCB {
         ui32 ObjectCount;
 
         TRawBuilderData Data;
+
+        TArrayRef<TGroupId> NumGroupIdsRef;
+        TArrayRef<TString> StringGroupIdsRef;
+        TArrayRef<TSubgroupId> NumSubgroupIdsRef;
+        TArrayRef<TString> StringSubgroupIdsRef;
 
         TDataProviderBuilderOptions Options;
 
@@ -1554,7 +1623,7 @@ namespace NCB {
         template <class T>
         static void CopyPart(ui32 objectOffset, TUnalignedArrayBuf<T> srcPart, TVector<T>* dstData) {
             CB_ENSURE_INTERNAL(
-                objectOffset < dstData->size(),
+                objectOffset <= dstData->size(),
                 LabeledOutput(objectOffset, srcPart.GetSize(), dstData->size()));
             CB_ENSURE_INTERNAL(
                 objectOffset + srcPart.GetSize() <= dstData->size(),
@@ -1566,11 +1635,11 @@ namespace NCB {
 
         // TCommonObjectsData
         void AddGroupIdPart(ui32 objectOffset, TUnalignedArrayBuf<TGroupId> groupIdPart) override {
-            CopyPart(objectOffset, groupIdPart, &(*Data.CommonObjectsData.GroupIds));
+            CopyPart(objectOffset, groupIdPart, &(*Data.CommonObjectsData.GroupIds.GetMaybeNumData()));
         }
 
         void AddSubgroupIdPart(ui32 objectOffset, TUnalignedArrayBuf<TSubgroupId> subgroupIdPart) override {
-            CopyPart(objectOffset, subgroupIdPart, &(*Data.CommonObjectsData.SubgroupIds));
+            CopyPart(objectOffset, subgroupIdPart, &(*Data.CommonObjectsData.SubgroupIds.GetMaybeNumData()));
         }
 
         void AddTimestampPart(ui32 objectOffset, TUnalignedArrayBuf<ui64> timestampPart) override {
@@ -1695,7 +1764,7 @@ namespace NCB {
 
         // needed for checking groupWeights consistency while loading from separate file
         TMaybeData<TConstArrayRef<TGroupId>> GetGroupIds() const override {
-            return Data.CommonObjectsData.GroupIds;
+            return Data.CommonObjectsData.GroupIds.GetMaybeNumData();
         }
 
         void Finish() override {
@@ -1740,6 +1809,7 @@ namespace NCB {
                 // without HasFeatures dataprovider self-test fails on distributed train
                 // on quantized pool
                 Options.SkipCheck || !DatasetSubset.HasFeatures,
+                Data.MetaInfo.ForceUnitAutoPairWeights,
                 LocalExecutor
             )->CastMoveTo<TObjectsDataProvider>();
         }
@@ -2317,6 +2387,7 @@ namespace NCB {
                 /*objectsGrouping*/ Nothing(), // will init from data
                 std::move(dataRef),
                 Options.SkipCheck,
+                dataRef.MetaInfo.ForceUnitAutoPairWeights,
                 LocalExecutor
             )->CastMoveTo<TObjectsDataProvider>();
         }

@@ -42,7 +42,7 @@ inline bool YaIsDebuggerPresent() {
 // __debugbreak is intrinsic in MSVC
 
 extern "C" {
-__declspec(dllimport) int __stdcall IsDebuggerPresent();
+    __declspec(dllimport) int __stdcall IsDebuggerPresent();
 }
 
 inline bool YaIsDebuggerPresent() {
@@ -65,6 +65,7 @@ inline void YaDebugBreak() {
                         __debugbreak();                         \
                     else {                                      \
                         PrintBackTrace();                       \
+                        /* NOLINTNEXTLINE */                    \
                         assert(false && (a));                   \
                     }                                           \
                 }                                               \
@@ -73,6 +74,7 @@ inline void YaDebugBreak() {
                     __debugbreak();                             \
                 else {                                          \
                     PrintBackTrace();                           \
+                    /* NOLINTNEXTLINE */                        \
                     assert(false && "Exception during assert"); \
                 }                                               \
             }                                                   \

@@ -102,8 +102,7 @@ public:
     {
     }
 
-    _LIBCPP_CONSTEXPR_AFTER_CXX14
-    inline TBasicStringBuf(const TCharType* data) noexcept
+    constexpr TBasicStringBuf(const TCharType* data) noexcept
         /*
          * WARN: TBase::StrLen properly handles nullptr,
          * while std::string_view (using std::char_traits) will abort in such case
@@ -157,8 +156,7 @@ public:
     {
     }
 
-    Y_PURE_FUNCTION
-    inline TBasicStringBuf SubString(size_t pos, size_t n) const noexcept {
+    Y_PURE_FUNCTION inline TBasicStringBuf SubString(size_t pos, size_t n) const noexcept {
         pos = Min(pos, size());
         n = Min(n, size() - pos);
         return TBasicStringBuf(data() + pos, n);
@@ -299,26 +297,22 @@ public:
 */
 
 public:
-    Y_PURE_FUNCTION
-    inline TdSelf After(TCharType c) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf After(TCharType c) const noexcept {
         TdSelf l, r;
         return TrySplit(c, l, r) ? r : *this;
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf Before(TCharType c) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf Before(TCharType c) const noexcept {
         TdSelf l, r;
         return TrySplit(c, l, r) ? l : *this;
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf RAfter(TCharType c) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf RAfter(TCharType c) const noexcept {
         TdSelf l, r;
         return TryRSplit(c, l, r) ? r : *this;
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf RBefore(TCharType c) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf RBefore(TCharType c) const noexcept {
         TdSelf l, r;
         return TryRSplit(c, l, r) ? l : *this;
     }
@@ -462,34 +456,33 @@ public: // string subsequences
         return *this;
     }
 
+    // coverity[exn_spec_violation]
     inline TdSelf& Trunc(size_t targetSize) noexcept {
-        //WARN: removing TStringView:: will lead to an infinite recursion
-        *this = TStringView::substr(0, targetSize);
+        // Coverity false positive issue
+        // exn_spec_violation: An exception of type "std::out_of_range" is thrown but the exception specification "noexcept" doesn't allow it to be thrown. This will result in a call to terminate().
+        // fun_call_w_exception: Called function TStringView::substr throws an exception of type "std::out_of_range".
+        // Suppress this issue because we pass argument pos=0 and string_view can't throw std::out_of_range.
+        *this = TStringView::substr(0, targetSize); //WARN: removing TStringView:: will lead to an infinite recursion
         return *this;
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf SubStr(size_t beg) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf SubStr(size_t beg) const noexcept {
         return TdSelf(*this).Skip(beg);
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf SubStr(size_t beg, size_t len) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf SubStr(size_t beg, size_t len) const noexcept {
         return SubStr(beg).Trunc(len);
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf Head(size_t pos) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf Head(size_t pos) const noexcept {
         return TdSelf(*this).Trunc(pos);
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf Tail(size_t pos) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf Tail(size_t pos) const noexcept {
         return SubStr(pos);
     }
 
-    Y_PURE_FUNCTION
-    inline TdSelf Last(size_t len) const noexcept {
+    Y_PURE_FUNCTION inline TdSelf Last(size_t len) const noexcept {
         return TdSelf(*this).RSeek(len);
     }
 
@@ -544,8 +537,3 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, TStringBuf buf);
-
-template <typename TCharType, size_t size>
-constexpr inline TBasicStringBuf<TCharType> AsStringBuf(const TCharType (&str)[size]) noexcept {
-    return TBasicStringBuf<TCharType>(str, size - 1);
-}

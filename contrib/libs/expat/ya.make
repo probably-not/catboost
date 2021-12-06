@@ -6,7 +6,15 @@ LIBRARY()
 
 VERSION(2.4.1)
 
-LICENSE(MIT)
+ORIGINAL_SOURCE(https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.xz)
+
+LICENSE(
+    CC0-1.0
+    JSON
+    MIT
+)
+
+LICENSE_TEXTS(.yandex_meta/licenses.list.txt)
 
 ADDINCL(
     contrib/libs/expat

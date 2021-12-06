@@ -9,6 +9,11 @@
 #include <util/stream/output.h>
 #include <util/stream/input.h>
 
+#ifndef __NVCC__
+    // cuda is compiled in C++14 mode at the time
+    #include <variant>
+#endif
+
 template <typename T>
 class TSerializeTypeTraits {
 public:
@@ -630,6 +635,8 @@ public:
     }
 };
 
+#ifndef __NVCC__
+
 namespace NPrivate {
     template <class Variant, class T, size_t I>
     void LoadVariantAlternative(IInputStream* is, Variant& v) {
@@ -640,17 +647,16 @@ namespace NPrivate {
 }
 
 template <typename... Args>
-struct TSerializer<TVariant<Args...>> {
-    using TVar = TVariant<Args...>;
+struct TSerializer<std::variant<Args...>> {
+    using TVar = std::variant<Args...>;
 
     static_assert(sizeof...(Args) < 256, "We use ui8 to store tag");
 
     static void Save(IOutputStream* os, const TVar& v) {
         ::Save<ui8>(os, v.index());
-        Visit([os](const auto& data) {
+        std::visit([os](const auto& data) {
             ::Save(os, data);
-        },
-              v);
+        }, v);
     }
 
     static void Load(IInputStream* is, TVar& v) {
@@ -670,6 +676,8 @@ private:
         loaders[index](is, v);
     }
 };
+
+#endif
 
 template <class T>
 static inline void SaveLoad(IOutputStream* out, const T& t) {
@@ -698,4 +706,13 @@ static inline void LoadMany(S* s, Ts&... t) {
                                                \
     inline void Load(IInputStream* s) {        \
         ::LoadMany(s, __VA_ARGS__);            \
+    }
+
+#define Y_SAVELOAD_DEFINE_OVERRIDE(...)          \
+    void Save(IOutputStream* s) const override { \
+        ::SaveMany(s, __VA_ARGS__);              \
+    }                                            \
+                                                 \
+    void Load(IInputStream* s) override {        \
+        ::LoadMany(s, __VA_ARGS__);              \
     }

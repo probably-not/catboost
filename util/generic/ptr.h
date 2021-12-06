@@ -12,6 +12,9 @@
 #include <util/system/yassert.h>
 #include <util/system/defaults.h>
 
+template <class T, class U>
+using TGuardConversion = typename std::enable_if_t<std::is_convertible<U*, T*>::value>;
+
 template <class T>
 inline void AssertTypeComplete() {
     // If compiler triggers this error from destructor of your class with
@@ -93,14 +96,6 @@ private:
      * we do not want dependancy on cstdlib here...
      */
     static void DoDestroy(void* t) noexcept;
-};
-
-template <class D>
-struct TDestroyFunctor {
-    template <class T>
-    inline void operator()(T* t) const noexcept {
-        D::Destroy(t);
-    }
 };
 
 template <class Base, class T>
@@ -247,7 +242,7 @@ public:
     {
     }
 
-    inline THolder(T* t) noexcept
+    explicit THolder(T* t) noexcept
         : T_(t)
     {
     }
@@ -257,7 +252,7 @@ public:
     {
     }
 
-    template <class U>
+    template <class U, class = TGuardConversion<T, U>>
     inline THolder(TAutoPtr<U, D> t) noexcept
         : T_(t.Release())
     {
@@ -268,7 +263,7 @@ public:
     {
     }
 
-    template <class U>
+    template <class U, class = TGuardConversion<T, U>>
     inline THolder(THolder<U, D>&& that) noexcept
         : T_(that.Release())
     {
@@ -350,8 +345,8 @@ private:
 };
 
 template <typename T, typename... Args>
-THolder<T> MakeHolder(Args&&... args) {
-    return new T(std::forward<Args>(args)...);
+[[nodiscard]] THolder<T> MakeHolder(Args&&... args) {
+    return THolder<T>(new T(std::forward<Args>(args)...));
 }
 
 /*
@@ -480,14 +475,27 @@ public:
 
 template <class T, class Ops>
 class TIntrusivePtr: public TPointerBase<TIntrusivePtr<T, Ops>, T> {
-    friend class TIntrusiveConstPtr<T, Ops>;
+    template <class U, class O>
+    friend class TIntrusivePtr;
+
+    template <class U, class O>
+    friend class TIntrusiveConstPtr;
 
 public:
+    struct TNoIncrement {
+    };
+
     inline TIntrusivePtr(T* t = nullptr) noexcept
         : T_(t)
     {
         Ops();
         Ref();
+    }
+
+    inline TIntrusivePtr(T* t, TNoIncrement) noexcept
+        : T_(t)
+    {
+        Ops();
     }
 
     inline ~TIntrusivePtr() {
@@ -509,11 +517,18 @@ public:
     //     void Func(TIntrusivePtr<B>);
     //     ...
     //     Func(TIntrusivePtr<A>(new A)); // <--- compiler can't decide which version of Func to use
-    template <class U>
-    inline TIntrusivePtr(const TIntrusivePtr<U>& p, std::enable_if_t<std::is_convertible<U*, T*>::value>* = nullptr) noexcept
+    template <class U, class = TGuardConversion<T, U>>
+    inline TIntrusivePtr(const TIntrusivePtr<U>& p) noexcept
         : T_(p.Get())
     {
         Ref();
+    }
+
+    template <class U, class = TGuardConversion<T, U>>
+    inline TIntrusivePtr(TIntrusivePtr<U>&& p) noexcept
+        : T_(p.T_)
+    {
+        p.T_ = nullptr;
     }
 
     inline TIntrusivePtr(TIntrusivePtr&& p) noexcept
@@ -622,17 +637,24 @@ public:
         Swap(p);
     }
 
-    inline TIntrusiveConstPtr(TIntrusivePtr<T, Ops> p) noexcept
-        : T_(nullptr)
+    inline TIntrusiveConstPtr(TIntrusivePtr<T> p) noexcept
+        : T_(p.T_)
     {
-        DoSwap(T_, p.T_);
+        p.T_ = nullptr;
     }
 
-    template <class U>
-    inline TIntrusiveConstPtr(const TIntrusiveConstPtr<U>& p, std::enable_if_t<std::is_convertible<U*, T*>::value>* = nullptr) noexcept
+    template <class U, class = TGuardConversion<T, U>>
+    inline TIntrusiveConstPtr(const TIntrusiveConstPtr<U>& p) noexcept
         : T_(p.T_)
     {
         Ref();
+    }
+
+    template <class U, class = TGuardConversion<T, U>>
+    inline TIntrusiveConstPtr(TIntrusiveConstPtr<U>&& p) noexcept
+        : T_(p.T_)
+    {
+        p.T_ = nullptr;
     }
 
     inline TIntrusiveConstPtr& operator=(TIntrusiveConstPtr p) noexcept {
@@ -757,12 +779,12 @@ template <class T, class Ops>
 typename TSimpleIntrusiveOps<T, Ops>::TFunc TSimpleIntrusiveOps<T, Ops>::UnRef_ = nullptr;
 
 template <typename T, class Ops = TDefaultIntrusivePtrOps<T>, typename... Args>
-TIntrusivePtr<T, Ops> MakeIntrusive(Args&&... args) {
+[[nodiscard]] TIntrusivePtr<T, Ops> MakeIntrusive(Args&&... args) {
     return new T{std::forward<Args>(args)...};
 }
 
 template <typename T, class Ops = TDefaultIntrusivePtrOps<T>, typename... Args>
-TIntrusiveConstPtr<T, Ops> MakeIntrusiveConst(Args&&... args) {
+[[nodiscard]] TIntrusiveConstPtr<T, Ops> MakeIntrusiveConst(Args&&... args) {
     return new T{std::forward<Args>(args)...};
 }
 
@@ -794,7 +816,7 @@ public:
     {
     }
 
-    template <class TT>
+    template <class TT, class = TGuardConversion<T, TT>>
     inline TSharedPtr(THolder<TT>&& t) {
         Init(t);
     }
@@ -817,12 +839,21 @@ public:
         Swap(t);
     }
 
-    template <class TT>
+    template <class TT, class = TGuardConversion<T, TT>>
     inline TSharedPtr(const TSharedPtr<TT, C, D>& t) noexcept
         : T_(t.T_)
         , C_(t.C_)
     {
         Ref();
+    }
+
+    template <class TT, class = TGuardConversion<T, TT>>
+    inline TSharedPtr(TSharedPtr<TT, C, D>&& t) noexcept
+        : T_(t.T_)
+        , C_(t.C_)
+    {
+        t.T_ = nullptr;
+        t.C_ = nullptr;
     }
 
     inline TSharedPtr& operator=(TSharedPtr t) noexcept {
@@ -917,17 +948,17 @@ template <class T, class D = TDelete>
 using TSimpleSharedPtr = TSharedPtr<T, TSimpleCounter, D>;
 
 template <typename T, typename C, typename... Args>
-TSharedPtr<T, C> MakeShared(Args&&... args) {
+[[nodiscard]] TSharedPtr<T, C> MakeShared(Args&&... args) {
     return new T{std::forward<Args>(args)...};
 }
 
 template <typename T, typename... Args>
-inline TAtomicSharedPtr<T> MakeAtomicShared(Args&&... args) {
+[[nodiscard]] inline TAtomicSharedPtr<T> MakeAtomicShared(Args&&... args) {
     return MakeShared<T, TAtomicCounter>(std::forward<Args>(args)...);
 }
 
 template <typename T, typename... Args>
-inline TSimpleSharedPtr<T> MakeSimpleShared(Args&&... args) {
+[[nodiscard]] inline TSimpleSharedPtr<T> MakeSimpleShared(Args&&... args) {
     return MakeShared<T, TSimpleCounter>(std::forward<Args>(args)...);
 }
 
@@ -974,7 +1005,7 @@ public:
         DoDestroy();
     }
 
-    inline TCopyPtr& operator=(TCopyPtr t) {
+    inline TCopyPtr& operator=(TCopyPtr t) noexcept {
         t.Swap(*this);
 
         return *this;

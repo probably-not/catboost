@@ -2,13 +2,10 @@
 #include "file.h"
 
 #include <sys/stat.h>
-#include <sys/types.h>
 
-#include <util/datetime/systime.h>
-#include <util/generic/string.h>
 #include <util/folder/path.h>
 
-#include <errno.h>
+#include <cerrno>
 
 #if defined(_win_)
     #include "fs_win.h"
@@ -90,14 +87,16 @@ static bool GetStatByName(TSystemFStat& fs, const char* fileName, bool nofollow)
     TFileHandle h = NFsPrivate::CreateFileWithUtf8Name(fileName, FILE_READ_ATTRIBUTES | FILE_READ_EA, FILE_SHARE_READ | FILE_SHARE_WRITE,
                                                        OPEN_EXISTING,
                                                        (nofollow ? FILE_FLAG_OPEN_REPARSE_POINT : 0) | FILE_FLAG_BACKUP_SEMANTICS, true);
+    if (!h.IsOpen()) {
+        return false;
+    }
     return GetStatByHandle(fs, h);
 #else
     return !(nofollow ? lstat : stat)(fileName, &fs);
 #endif
 }
 
-TFileStat::TFileStat() {
-}
+TFileStat::TFileStat() = default;
 
 TFileStat::TFileStat(const TFile& f) {
     *this = TFileStat(f.GetHandle());
@@ -172,8 +171,9 @@ i64 GetFileLength(FHANDLE fd) {
     return pos.QuadPart;
 #elif defined(_unix_)
     struct stat statbuf;
-    if (::fstat(fd, &statbuf) != 0)
+    if (::fstat(fd, &statbuf) != 0) {
         return -1L;
+    }
     if (!(statbuf.st_mode & (S_IFREG | S_IFBLK | S_IFCHR))) {
         // st_size only makes sense for regular files or devices
         errno = EINVAL;
@@ -196,8 +196,9 @@ i64 GetFileLength(const char* name) {
 #elif defined(_unix_)
     struct stat buf;
     int r = ::stat(name, &buf);
-    if (r == -1)
+    if (r == -1) {
         return -1;
+    }
     if (!(buf.st_mode & (S_IFREG | S_IFBLK | S_IFCHR))) {
         // st_size only makes sense for regular files or devices
         errno = EINVAL;

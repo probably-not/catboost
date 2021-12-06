@@ -1,11 +1,10 @@
 #include "file.h"
 #include "fs.h"
+#include "tempfile.h"
 
 #include <library/cpp/testing/unittest/registar.h>
 
 #include <util/stream/file.h>
-#include "tempfile.h"
-#include "mktemp.h"
 #include <util/generic/yexception.h>
 
 class TFileTest: public TTestBase {
@@ -342,8 +341,9 @@ void TFileTest::TestCache(){
      TFile file(MakeTempName("/tmp"), OpenAlways | Transient | RdWr | NoReadAhead);
 
 struct statfs fs;
-if (!fstatfs(file.GetHandle(), &fs) && fs.f_type == TMPFS_MAGIC)
+if (!fstatfs(file.GetHandle(), &fs) && fs.f_type == TMPFS_MAGIC) {
     return;
+}
 
 UNIT_ASSERT_VALUES_EQUAL(file.CountCache(), 0);
 UNIT_ASSERT_VALUES_EQUAL(file.CountCache(0, 0), 0);

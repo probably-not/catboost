@@ -57,8 +57,8 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <UseFullPaths>true</UseFullPaths>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ob0 /Od /D_DEBUG /MTd /Zi /FS /we4013 /w14018 /w14265 /w14296 /w14431 /wd4127 /wd4200 /wd4201 /wd4351 /wd4355 /wd4503 /wd4510 /wd4511 /wd4512 /wd4554 /wd4610 /wd4706 /wd4800 /wd4996 /wd4714 /wd4197 /wd4245 /wd4324 /wd5033 /DFAKEID=5020880 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /std:c++latest /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ox /Ob2 /Oi /DNDEBUG /MT /Zi /FS /we4013 /w14018 /w14265 /w14296 /w14431 /wd4127 /wd4200 /wd4201 /wd4351 /wd4355 /wd4503 /wd4510 /wd4511 /wd4512 /wd4554 /wd4610 /wd4706 /wd4800 /wd4996 /wd4714 /wd4197 /wd4245 /wd4324 /wd5033 /DFAKEID=5020880 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /std:c++latest /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ob0 /Od /D_DEBUG /MTd /Zi /FS /we4013 /w14018 /w14265 /w14296 /w14431 /wd4127 /wd4200 /wd4201 /wd4351 /wd4355 /wd4503 /wd4510 /wd4511 /wd4512 /wd4554 /wd4610 /wd4706 /wd4800 /wd4996 /wd4714 /wd4197 /wd4245 /wd4324 /wd5033 /DFAKEID=8904404 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /std:c++latest /Zc:__cplusplus /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes  </AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/nologo /Zm500 /GR /bigobj /FC /EHs /errorReport:prompt /Zc:inline /utf-8 /permissive- /FD /MP /Ox /Ob2 /Oi /DNDEBUG /MT /Zi /FS /we4013 /w14018 /w14265 /w14296 /w14431 /wd4127 /wd4200 /wd4201 /wd4351 /wd4355 /wd4503 /wd4510 /wd4511 /wd4512 /wd4554 /wd4610 /wd4706 /wd4800 /wd4996 /wd4714 /wd4197 /wd4245 /wd4324 /wd5033 /DFAKEID=8904404 /DWIN32 /D_WIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_WARNINGS /D_USE_MATH_DEFINES /D__STDC_CONSTANT_MACROS /D__STDC_FORMAT_MACROS /D_USING_V110_SDK71_ /D_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES /DNOMINMAX /DWIN32_LEAN_AND_MEAN /D_WIN64 /DWIN64 /D_WIN32_WINNT=0x0601 /D_MBCS -DCATBOOST_OPENSOURCE=yes -D_LIBCPP_VASPRINTF_DEFINED -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_ -DXML_STATIC -DLZMA_API_STATIC -DFFI_BUILDING -DUSE_PYTHON3 "-I$(CUDA_PATH)/include" -DCATBOOST_OPENSOURCE=yes /DY_UCRT_INCLUDE="$(UniversalCRT_IncludePath.Split(';')[0].Replace('\','/'))" /DY_MSVC_INCLUDE="$(VC_VC_IncludePath.Split(';')[0].Replace('\','/'))" /std:c++latest /Zc:__cplusplus /D_CRT_USE_BUILTIN_OFFSETOF  -DCATBOOST_OPENSOURCE=yes  </AdditionalOptions>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level4</WarningLevel>
       <RemoveUnreferencedCodeData Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"/>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level4</WarningLevel>
@@ -67,8 +67,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>advapi32.lib;comdlg32.lib;crypt32.lib;dnsapi.lib;gdi32.lib;iphlpapi.lib;kernel32.lib;mswsock.lib;ole32.lib;oleaut32.lib;psapi.lib;rpcrt4.lib;secur32.lib;shell32.lib;shlwapi.lib;user32.lib;userenv.lib;uuid.lib;version.lib;winmm.lib;winspool.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudart_static.lib</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudart_static.lib</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudadevrt.lib cudart_static.lib</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/NOLOGO /ERRORREPORT:PROMPT /SUBSYSTEM:CONSOLE /TLBID:1 /NXCOMPAT /IGNORE:4221 /MACHINE:X64 /INCREMENTAL  Mincore.lib Shlwapi.lib Winmm.lib "/LIBPATH:$(CUDA_PATH)/lib/x64" cudadevrt.lib cudart_static.lib</AdditionalOptions>
       <SubSystem Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Console</SubSystem>
       <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DebugFastLink</GenerateDebugInformation>
       <RandomizedBaseAddress Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</RandomizedBaseAddress>
@@ -78,6 +78,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)$(Configuration)\catboost\pytest\lib\_5198bb0d23295b7c07e035ce32.yasm">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd /d $(SolutionDir)$(Configuration)\catboost\pytest\lib
+if %errorlevel% neq 0 goto :cmEnd
+"$(SolutionDir)$(Configuration)/contrib/tools/yasm/yasm.exe" "-f" "win64" -D "WIN64" -D "_x86_64_" -D_YASM_ "-I" "$(SolutionDir)$(Configuration)" "-I" "$(SolutionDir).." "-o" "$(SolutionDir)$(Configuration)/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.py3.obj" "$(SolutionDir)$(Configuration)/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.yasm"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd /d $(SolutionDir)$(Configuration)\catboost\pytest\lib
+if %errorlevel% neq 0 goto :cmEnd
+"$(SolutionDir)$(Configuration)/contrib/tools/yasm/yasm.exe" "-f" "win64" -D "WIN64" -D "_x86_64_" -D_YASM_ "-I" "$(SolutionDir)$(Configuration)" "-I" "$(SolutionDir).." "-o" "$(SolutionDir)$(Configuration)/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.py3.obj" "$(SolutionDir)$(Configuration)/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.yasm"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <Message>$B/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.py3.obj	</Message>
+      <AdditionalInputs>$(SolutionDir)$(Configuration)\catboost\pytest\lib\_5198bb0d23295b7c07e035ce32.yasm;$(SolutionDir)$(Configuration)\contrib\tools\yasm\yasm.exe;</AdditionalInputs>
+      <Outputs>$(SolutionDir)$(Configuration)\catboost\pytest\lib\_5198bb0d23295b7c07e035ce32.py3.obj;</Outputs>
+    </CustomBuild>
     <CustomBuild Include="$(SolutionDir)$(Configuration)\catboost\pytest\lib\_eb8e7d48525eb42d84dc5c565e.yasm">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
 cd /d $(SolutionDir)$(Configuration)\catboost\pytest\lib
@@ -104,6 +131,33 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Message>$B/catboost/pytest/lib/_eb8e7d48525eb42d84dc5c565e.py3.obj	</Message>
       <AdditionalInputs>$(SolutionDir)$(Configuration)\catboost\pytest\lib\_eb8e7d48525eb42d84dc5c565e.yasm;$(SolutionDir)$(Configuration)\contrib\tools\yasm\yasm.exe;</AdditionalInputs>
       <Outputs>$(SolutionDir)$(Configuration)\catboost\pytest\lib\_eb8e7d48525eb42d84dc5c565e.py3.obj;</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)$(Configuration)\tools\rescompressor\rescompressor.exe">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd /d $(SolutionDir)$(Configuration)\catboost\pytest\lib
+if %errorlevel% neq 0 goto :cmEnd
+"$(SolutionDir)$(Configuration)/tools/rescompressor/rescompressor.exe" "$(SolutionDir)$(Configuration)/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.yasm" "-" "catboost_pytest_lib." "_41eb2b1b14a0a9e85daaa0ac44.rodata"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd /d $(SolutionDir)$(Configuration)\catboost\pytest\lib
+if %errorlevel% neq 0 goto :cmEnd
+"$(SolutionDir)$(Configuration)/tools/rescompressor/rescompressor.exe" "$(SolutionDir)$(Configuration)/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.yasm" "-" "catboost_pytest_lib." "_41eb2b1b14a0a9e85daaa0ac44.rodata"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <Message>$B/catboost/pytest/lib/_5198bb0d23295b7c07e035ce32.yasm	</Message>
+      <AdditionalInputs>$(SolutionDir)$(Configuration)\tools\rescompressor\rescompressor.exe;</AdditionalInputs>
+      <Outputs>$(SolutionDir)$(Configuration)\catboost\pytest\lib\_5198bb0d23295b7c07e035ce32.yasm;</Outputs>
     </CustomBuild>
     <CustomBuild Include="$(SolutionDir)..\catboost\pytest\lib\__init__.py">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -244,6 +298,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\catboost\libs\helpers\catboost-libs-helpers.vcxproj">
       <Project>{1ED2E5C8-4D20-BC86-8EEB-C69117E1D3FA}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\catboost\libs\helpers\flatbuffers\libs-helpers-flatbuffers.vcxproj">
+      <Project>{EC63A982-A3AC-CD58-0813-FF9DC10C9825}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\catboost\libs\helpers\parallel_sort\libs-helpers-parallel_sort.vcxproj">
       <Project>{3D8525D8-C5BE-2847-94DF-23F1896F6BA1}</Project>
@@ -410,9 +467,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\crcutil\contrib-libs-crcutil.vcxproj">
       <Project>{1EE751F2-33FA-3640-4C59-F20313BE143E}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\cub\contrib-libs-cub.vcxproj">
-      <Project>{E6D0934F-A141-5DB0-60FA-6BD719540061}</Project>
-    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\cxxsupp\contrib-libs-cxxsupp.vcxproj">
       <Project>{8D7C41B0-2344-C558-29D8-570B39498A2F}</Project>
     </ProjectReference>
@@ -458,6 +512,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\nayuki_md5\contrib-libs-nayuki_md5.vcxproj">
       <Project>{C0251DC8-E401-B1AF-785F-72D686693CB9}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\nvidia\cub\libs-nvidia-cub.vcxproj">
+      <Project>{B1B146A3-CFD6-0035-F05E-D7DACD90FFAF}</Project>
+    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\onnx\contrib-libs-onnx.vcxproj">
       <Project>{BA51C351-CD64-A60B-C4C2-2794FC71EE24}</Project>
     </ProjectReference>
@@ -478,6 +535,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\python\py3contrib-libs-python.vcxproj">
       <Project>{5B790388-FDEE-2F70-2F9B-EDB49D07DACF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\qhull\contrib-libs-qhull.vcxproj">
+      <Project>{D17CDA35-BBFB-9CB1-7DE2-862989C7B224}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\rapidjson\contrib-libs-rapidjson.vcxproj">
       <Project>{9CDB08FB-219D-3356-E006-1AC8AECC636E}</Project>
@@ -509,8 +569,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\libs\zstd06\contrib-libs-zstd06.vcxproj">
       <Project>{149CAE2F-67B1-E007-9F05-67247453CE03}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\Jinja2\py3Jinja2.vcxproj">
-      <Project>{ABE69C03-D8AA-46E8-A10F-942CBD86C860}</Project>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\Jinja2\py3\pypython-Jinja2-py3.vcxproj">
+      <Project>{3D4B481E-2985-E2CB-DB77-D5D8985A9A73}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\Jinja2\py3contrib-python-Jinja2.vcxproj">
+      <Project>{7B02C64E-9C71-F289-7191-EBB8E5746133}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\MarkupSafe\py3\pypython-MarkupSafe-py3.vcxproj">
       <Project>{FC9A76DB-4BF2-BCBF-BF48-AD3E3AF6EC57}</Project>
@@ -518,8 +581,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\MarkupSafe\py3contrib-python-MarkupSafe.vcxproj">
       <Project>{0AF8F6ED-AFD8-CA23-BD1D-2D750C053CF0}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\dateutil\py3dateutil.vcxproj">
-      <Project>{4F62D972-C51F-BBC3-4B6A-266C6674E907}</Project>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\dateutil\py3contrib-python-dateutil.vcxproj">
+      <Project>{D274033C-8742-EABF-10AB-335A323CB8E0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\graphviz\py3\pypython-graphviz-py3.vcxproj">
+      <Project>{36BED28F-165D-7F2F-F290-96288A3E77C6}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\graphviz\py3contrib-python-graphviz.vcxproj">
       <Project>{330DC72E-A843-8BC7-F0CD-1868368EA271}</Project>
@@ -542,131 +608,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\pytz\py3contrib-python-pytz.vcxproj">
       <Project>{5257C446-B594-693C-C2C7-E97834CB951E}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\_build_utils\src\scipy-_build_utils-src.vcxproj">
-      <Project>{9AFA0B40-428F-C48C-E67A-74044B678B53}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\_lib\py3scipy-scipy-_lib.vcxproj">
-      <Project>{DD24B9E5-4DEC-B9CD-5E35-2E89E1A59626}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\fftpack\src\scipy-fftpack-src.vcxproj">
-      <Project>{98A8BEA7-8353-8B9E-066B-ABEDD2F75121}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\integrate\dop\scipy-integrate-dop.vcxproj">
-      <Project>{5EFFD1DE-EF87-7387-E459-A549CF0C2BED}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\integrate\mach\scipy-integrate-mach.vcxproj">
-      <Project>{3CF28257-900D-CA4D-DB5B-3C91AAC86CF2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\integrate\odepack\scipy-integrate-odepack.vcxproj">
-      <Project>{A5134F90-8B8B-B5D8-38FD-41DD7277E905}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\integrate\py3scipy-scipy-integrate.vcxproj">
-      <Project>{862C8AE6-8D86-3DDD-000B-665F360B9C2E}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\integrate\quadpack\scipy-integrate-quadpack.vcxproj">
-      <Project>{4E90A0E4-E8CE-5534-7BEA-AA6837DA2F9C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\linalg\py3scipy-scipy-linalg.vcxproj">
-      <Project>{C14DC1D5-6DD8-D3D2-EBC3-7B61DEE814FC}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\linalg\src\id_dist\src\src-id_dist-src.vcxproj">
-      <Project>{645CCEEE-2FA3-B06C-ADDE-E545B0813653}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\linalg\src\scipy-linalg-src.vcxproj">
-      <Project>{B9F50016-E750-8620-FE7F-92FA9FAE22D7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\misc\py3scipy-scipy-misc.vcxproj">
-      <Project>{F37263BB-F54F-BCEE-5720-3DBE69A44B8F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\Zeros\scipy-optimize-Zeros.vcxproj">
-      <Project>{E0AEF318-5435-E964-59F1-D7FFDC12237A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\_lsq\py3scipy-optimize-_lsq.vcxproj">
-      <Project>{7A8A96E7-3A76-295B-C114-74D4C2930E62}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\cobyla\py3scipy-optimize-cobyla.vcxproj">
-      <Project>{28A74A29-5735-B00B-C21D-3D3FBA990ADB}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\lbfgsb\py3scipy-optimize-lbfgsb.vcxproj">
-      <Project>{95C60DBA-822C-2AE4-051D-38FD666710E6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\minpack\scipy-optimize-minpack.vcxproj">
-      <Project>{EFB08115-9C69-F46D-BD6E-58F219B45F53}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\minpack2\py3scipy-optimize-minpack2.vcxproj">
-      <Project>{840FC49C-01D3-70FC-D89D-B2ABDAE306E1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\nnls\py3scipy-optimize-nnls.vcxproj">
-      <Project>{BBDC3673-CD13-DF78-D24F-754016F52055}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\py3scipy-scipy-optimize.vcxproj">
-      <Project>{C87009A8-81F0-57F5-DABB-ECCA361ECEF0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\slsqp\py3scipy-optimize-slsqp.vcxproj">
-      <Project>{E8365617-2C1C-21D1-B2C5-2BB5A6FDAE46}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\optimize\tnc\py3scipy-optimize-tnc.vcxproj">
-      <Project>{965C2B81-2C5F-01EF-BD97-E01BE59F8450}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\csgraph\py3scipy-sparse-csgraph.vcxproj">
-      <Project>{F6FC21A0-4ECA-564B-C3EA-06192E18E89F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\dsolve\SuperLU\SRC\dsolve-SuperLU-SRC.vcxproj">
-      <Project>{AC92B73C-DFD9-89C5-C716-4F75D190323D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\dsolve\py3sparse-linalg-dsolve.vcxproj">
-      <Project>{3E0BC584-0AAE-7C5A-C16A-2838E6F252EB}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\eigen\arpack\ARPACK\eigen-arpack-ARPACK.vcxproj">
-      <Project>{664C508C-B3CE-09A9-FDFA-7158F797008B}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\eigen\arpack\py3linalg-eigen-arpack.vcxproj">
-      <Project>{398D76D1-B4FF-F0F6-A7C9-A376E6D2391B}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\eigen\lobpcg\py3linalg-eigen-lobpcg.vcxproj">
-      <Project>{AD4294A5-B820-9396-098C-5FBAA45262F3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\eigen\py3sparse-linalg-eigen.vcxproj">
-      <Project>{22F518EB-5F72-A3E1-C835-55D7C17DD7BC}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\isolve\iterative\py3linalg-isolve-iterative.vcxproj">
-      <Project>{BFAAAEC1-CCE6-6D6A-A37F-50229A067D8D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\isolve\py3sparse-linalg-isolve.vcxproj">
-      <Project>{36D79018-A41D-B25D-15D6-476AD19D7B9F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\linalg\py3scipy-sparse-linalg.vcxproj">
-      <Project>{BA1957C9-55DC-56AB-DCC1-5ECC4A6CB6EB}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\py3scipy-scipy-sparse.vcxproj">
-      <Project>{E6BC0035-D83E-0748-C4E0-40880BE600ED}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\sparse\sparsetools\py3scipy-sparse-sparsetools.vcxproj">
-      <Project>{948C1792-E99D-93D7-A0A9-B714E9620CD1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\_precompute\py3scipy-special-_precompute.vcxproj">
-      <Project>{C08AB21C-1FD2-4AC4-A428-8AB16FE8E8E6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\amos\scipy-special-amos.vcxproj">
-      <Project>{0C120EC2-67BE-1FF3-1D71-5270B33FA22A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\c_misc\py3scipy-special-c_misc.vcxproj">
-      <Project>{861E3275-338E-78E4-033C-CD144FFFD80C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\cdflib\scipy-special-cdflib.vcxproj">
-      <Project>{2B797A4E-2B42-A01F-E27D-A766B9C2109C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\cephes\py3scipy-special-cephes.vcxproj">
-      <Project>{A5A76E67-6C26-BE49-3A90-FB44424FED1F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\mach\scipy-special-mach.vcxproj">
-      <Project>{AE349B1F-1B09-F166-4846-DFA956B2CB60}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\py3scipy-scipy-special.vcxproj">
-      <Project>{C3F42132-09B5-C9A2-70F9-EC333112AF07}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\scipy\special\specfun\scipy-special-specfun.vcxproj">
-      <Project>{70BE4F90-CC0B-2070-A442-D64EE570E045}</Project>
+    <ProjectReference Include="$(SolutionDir)Projects\contrib\python\scipy\py3contrib-python-scipy.vcxproj">
+      <Project>{A57F658E-50AA-391E-E485-F24502684666}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\contrib\python\setuptools\py3\pypython-setuptools-py3.vcxproj">
       <Project>{7B88BE8A-26E1-5596-FE7C-CF79CBCB2D3D}</Project>
@@ -781,6 +724,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\coroutine\listener\cpp-coroutine-listener.vcxproj">
       <Project>{C43D7284-E485-A23F-D1EB-E5104D32806A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\cuda\exception\cpp-cuda-exception.vcxproj">
+      <Project>{4485FA18-F2CA-4E61-F357-3E8F126F57AE}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\cuda\wrappers\cpp-cuda-wrappers.vcxproj">
       <Project>{9935B7C4-C890-9840-0263-8F903791A80D}</Project>
@@ -950,6 +896,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\svnversion\library-cpp-svnversion.vcxproj">
       <Project>{C3083C9F-6349-B5A2-3DD0-2098D66566DB}</Project>
     </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\testing\common\cpp-testing-common.vcxproj">
+      <Project>{68BC6E30-C1B2-55F8-2F66-99AE7F9777EC}</Project>
+    </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\text_processing\app_helpers\cpp-text_processing-app_helpers.vcxproj">
       <Project>{09B40915-9FA4-8249-87CD-4535A90064D1}</Project>
     </ProjectReference>
@@ -997,6 +946,30 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yson\library-cpp-yson.vcxproj">
       <Project>{D05A14C5-BA93-7AA3-1AB8-E62B001110D1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yt\assert\cpp-yt-assert.vcxproj">
+      <Project>{EBF93909-1BD6-7840-3A4B-D5668E08E011}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yt\memory\cpp-yt-memory.vcxproj">
+      <Project>{202131E1-2CB7-AD9D-424C-5EED820FF864}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yt\misc\cpp-yt-misc.vcxproj">
+      <Project>{C6F036AA-9EA5-68E2-EAF2-CDEFE55C0DD5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yt\string\cpp-yt-string.vcxproj">
+      <Project>{095E35E3-819C-26EC-ADF1-7A7720B6D0C9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yt\yson\cpp-yt-yson.vcxproj">
+      <Project>{1F68CF72-DA99-A8BA-A812-0F21F78B6A29}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\yt\yson_string\cpp-yt-yson_string.vcxproj">
+      <Project>{941A9342-350F-D87A-1E89-C724B0F1F66C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\ytalloc\api\cpp-ytalloc-api.vcxproj">
+      <Project>{D0B26F3B-1FA2-DBBE-795F-70EF8DDE9BE1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)Projects\library\cpp\ytalloc\core\cpp-ytalloc-core.vcxproj">
+      <Project>{48CA1C7E-9FF3-8299-9D74-DB9A77F55630}</Project>
     </ProjectReference>
     <ProjectReference Include="$(SolutionDir)Projects\library\python\resource\py3library-python-resource.vcxproj">
       <Project>{56BE61DD-902F-46E5-A0C0-F54A78D0B209}</Project>

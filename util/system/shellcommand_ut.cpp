@@ -15,6 +15,7 @@
 #include <util/stream/str.h>
 #include <util/stream/mem.h>
 #include <util/string/strip.h>
+#include <util/folder/tempdir.h>
 
 #if defined(_win_)
     #define NL "\r\n"
@@ -29,33 +30,33 @@ const size_t textSize = 20000;
 class TGuardedStringStream: public IInputStream, public IOutputStream {
 public:
     TGuardedStringStream() {
-        Stream.Reserve(100);
+        Stream_.Reserve(100);
     }
 
     TString Str() const {
-        with_lock (Lock) {
-            return Stream.Str();
+        with_lock (Lock_) {
+            return Stream_.Str();
         }
         return TString(); // line for compiler
     }
 
 protected:
     size_t DoRead(void* buf, size_t len) override {
-        with_lock (Lock) {
-            return Stream.Read(buf, len);
+        with_lock (Lock_) {
+            return Stream_.Read(buf, len);
         }
         return 0; // line for compiler
     }
 
     void DoWrite(const void* buf, size_t len) override {
-        with_lock (Lock) {
-            return Stream.Write(buf, len);
+        with_lock (Lock_) {
+            return Stream_.Write(buf, len);
         }
     }
 
 private:
-    TAdaptiveLock Lock;
-    TStringStream Stream;
+    TAdaptiveLock Lock_;
+    TStringStream Stream_;
 };
 
 Y_UNIT_TEST_SUITE(TShellQuoteTest) {
@@ -463,5 +464,30 @@ Y_UNIT_TEST_SUITE(TShellCommandTest) {
 
         UNIT_ASSERT(options.OutputMode == TShellCommandOptions::HANDLE_STREAM);
         UNIT_ASSERT(options.ErrorMode == TShellCommandOptions::HANDLE_STREAM);
+    }
+    Y_UNIT_TEST(TestForkCallback) {
+        TString tmpFile = TString("shellcommand_ut.test_for_callback.txt");
+        TFsPath cwd(::NFs::CurrentWorkingDirectory());
+        const TString tmpFilePath = cwd.Child(tmpFile);
+
+        const TString text = "test output";
+        auto afterForkCallback = [&tmpFilePath, &text]() -> void {
+            TFixedBufferFileOutput out(tmpFilePath);
+            out << text;
+        };
+
+        TShellCommandOptions options;
+        options.SetFuncAfterFork(afterForkCallback);
+
+        const TString command = "ls";
+        TShellCommand cmd(command, options);
+        cmd.Run();
+
+        UNIT_ASSERT(NFs::Exists(tmpFilePath));
+
+        TUnbufferedFileInput fileOutput(tmpFilePath);
+        TString firstLine = fileOutput.ReadLine();
+
+        UNIT_ASSERT_VALUES_EQUAL(firstLine, text);
     }
 }

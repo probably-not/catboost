@@ -217,7 +217,6 @@
   - json_valueiterator.inl
   - value.h
   - pthread/mit/sys/timers.h
-  - ../src/config.h
   - sljit/sljitLir.c
   - pcre_printint.c
   #ifdef defined(emacs) && CONTRIB && TRASH
@@ -326,6 +325,7 @@
   - sys/mpctl.h
   - sys/mutex.h
   - sys/rwlock.h
+  - sys/semaphore.h
   - sys/smp.h
   - sys/stdint.h
   - sys/systm.h

@@ -1,12 +1,19 @@
 PY23_LIBRARY()
 
+WITHOUT_LICENSE_TEXTS()
+
 LICENSE(BSD-3-Clause)
 
 
 
+NO_MYPY()
+
 PY_NAMESPACE(.)
+
 PROTO_NAMESPACE(contrib/libs/protobuf/src)
+
 SRCDIR(contrib/libs/protobuf/src)
+
 PY_SRCS(
     google/protobuf/any.proto
     google/protobuf/api.proto

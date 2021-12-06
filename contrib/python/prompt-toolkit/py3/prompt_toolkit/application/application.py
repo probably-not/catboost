@@ -11,7 +11,6 @@ from asyncio import (
     Future,
     Task,
     ensure_future,
-    get_event_loop,
     new_event_loop,
     set_event_loop,
     sleep,
@@ -48,7 +47,7 @@ from prompt_toolkit.eventloop import (
     get_traceback_from_context,
     run_in_executor_with_context,
 )
-from prompt_toolkit.eventloop.utils import call_soon_threadsafe
+from prompt_toolkit.eventloop.utils import call_soon_threadsafe, get_event_loop
 from prompt_toolkit.filters import Condition, Filter, FilterOrBool, to_filter
 from prompt_toolkit.formatted_text import AnyFormattedText
 from prompt_toolkit.input.base import Input
@@ -216,10 +215,10 @@ class Application(Generic[_AppResult]):
         max_render_postpone_time: Union[float, int, None] = 0.01,
         refresh_interval: Optional[float] = None,
         terminal_size_polling_interval: Optional[float] = 0.5,
-        on_reset: Optional[ApplicationEventHandler] = None,
-        on_invalidate: Optional[ApplicationEventHandler] = None,
-        before_render: Optional[ApplicationEventHandler] = None,
-        after_render: Optional[ApplicationEventHandler] = None,
+        on_reset: Optional["ApplicationEventHandler[_AppResult]"] = None,
+        on_invalidate: Optional["ApplicationEventHandler[_AppResult]"] = None,
+        before_render: Optional["ApplicationEventHandler[_AppResult]"] = None,
+        after_render: Optional["ApplicationEventHandler[_AppResult]"] = None,
         # I/O.
         input: Optional[Input] = None,
         output: Optional[Output] = None,
@@ -769,7 +768,7 @@ class Application(Generic[_AppResult]):
                         # Store unprocessed input as typeahead for next time.
                         store_typeahead(self.input, self.key_processor.empty_queue())
 
-                return result
+                return cast(_AppResult, result)
 
         async def _run_async2() -> _AppResult:
             self._is_running = True
@@ -787,7 +786,7 @@ class Application(Generic[_AppResult]):
                 loop.set_exception_handler(self._handle_exception)
 
             try:
-                with set_app(self):
+                with set_app(self), self._enable_breakpointhook():
                     try:
                         result = await _run_async()
                     finally:
@@ -917,6 +916,55 @@ class Application(Generic[_AppResult]):
                 await _do_wait_for_enter("Press ENTER to continue...")
 
         ensure_future(in_term())
+
+    @contextmanager
+    def _enable_breakpointhook(self) -> Generator[None, None, None]:
+        """
+        Install our custom breakpointhook for the duration of this context
+        manager. (We will only install the hook if no other custom hook was
+        set.)
+        """
+        if sys.version_info >= (3, 7) and sys.breakpointhook == sys.__breakpointhook__:
+            sys.breakpointhook = self._breakpointhook
+
+            try:
+                yield
+            finally:
+                sys.breakpointhook = sys.__breakpointhook__
+        else:
+            yield
+
+    def _breakpointhook(self, *a: object, **kw: object) -> None:
+        """
+        Breakpointhook which uses PDB, but ensures that the application is
+        hidden and input echoing is restored during each debugger dispatch.
+        """
+        app = self
+        # Inline import on purpose. We don't want to import pdb, if not needed.
+        import pdb
+        from types import FrameType
+
+        TraceDispatch = Callable[[FrameType, str, Any], Any]
+
+        class CustomPdb(pdb.Pdb):
+            def trace_dispatch(
+                self, frame: FrameType, event: str, arg: Any
+            ) -> TraceDispatch:
+                # Hide application.
+                app.renderer.erase()
+
+                # Detach input and dispatch to debugger.
+                with app.input.detach():
+                    with app.input.cooked_mode():
+                        return super().trace_dispatch(frame, event, arg)
+
+                # Note: we don't render the application again here, because
+                # there's a good chance that there's a breakpoint on the next
+                # line. This paint/erase cycle would move the PDB prompt back
+                # to the middle of the screen.
+
+        frame = sys._getframe().f_back
+        CustomPdb(stdout=sys.__stdout__).set_trace(frame)
 
     def create_background_task(
         self, coroutine: Awaitable[None]
@@ -1317,7 +1365,7 @@ def attach_winch_signal_handler(
 
     # Keep track of the previous handler.
     # (Only UnixSelectorEventloop has `_signal_handlers`.)
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     previous_winch_handler = getattr(loop, "_signal_handlers", {}).get(sigwinch)
 
     try:

@@ -1,20 +1,20 @@
 PY3_LIBRARY()
 
+
+
+VERSION(59.3.0)
+
 LICENSE(MIT)
-
-
-
-VERSION(57.0.0)
 
 PEERDIR(
     library/python/resource
 )
 
+NO_LINT()
+
 NO_CHECK_IMPORTS(
     setuptools.*
 )
-
-NO_LINT()
 
 PY_SRCS(
     TOP_LEVEL
@@ -25,9 +25,9 @@ PY_SRCS(
     pkg_resources/_vendor/appdirs.py
     pkg_resources/_vendor/packaging/__about__.py
     pkg_resources/_vendor/packaging/__init__.py
-    pkg_resources/_vendor/packaging/_compat.py
+    pkg_resources/_vendor/packaging/_manylinux.py
+    pkg_resources/_vendor/packaging/_musllinux.py
     pkg_resources/_vendor/packaging/_structures.py
-    pkg_resources/_vendor/packaging/_typing.py
     pkg_resources/_vendor/packaging/markers.py
     pkg_resources/_vendor/packaging/requirements.py
     pkg_resources/_vendor/packaging/specifiers.py
@@ -100,9 +100,9 @@ PY_SRCS(
     setuptools/_vendor/ordered_set.py
     setuptools/_vendor/packaging/__about__.py
     setuptools/_vendor/packaging/__init__.py
-    setuptools/_vendor/packaging/_compat.py
+    setuptools/_vendor/packaging/_manylinux.py
+    setuptools/_vendor/packaging/_musllinux.py
     setuptools/_vendor/packaging/_structures.py
-    setuptools/_vendor/packaging/_typing.py
     setuptools/_vendor/packaging/markers.py
     setuptools/_vendor/packaging/requirements.py
     setuptools/_vendor/packaging/specifiers.py
@@ -146,14 +146,12 @@ PY_SRCS(
     setuptools/glob.py
     setuptools/installer.py
     setuptools/launch.py
-    setuptools/lib2to3_ex.py
     setuptools/monkey.py
     setuptools/msvc.py
     setuptools/namespaces.py
     setuptools/package_index.py
     setuptools/py34compat.py
     setuptools/sandbox.py
-    setuptools/ssl_support.py
     setuptools/unicode_utils.py
     setuptools/version.py
     setuptools/wheel.py

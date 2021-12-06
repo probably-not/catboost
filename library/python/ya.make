@@ -8,6 +8,7 @@ RECURSE(
     func
     func/ut
     fs
+    hnsw
     pymain
     pytest
     pytest/allure

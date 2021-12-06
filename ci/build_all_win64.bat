@@ -51,6 +51,12 @@ set PATH=c:\Python%PyV%\Scripts;%ORIG_PATH%
 c:\Python%PyV%\python.exe mk_wheel.py %WIN_COMMON_FLAGS% -DPYTHON_INCLUDE="/I c:/Python%PyV%/include/" -DPYTHON_LIBRARIES="c:/Python%PyV%/libs/python%PyV%.lib"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
+set PyV=310
+echo c:\Python%PyV%\python.exe
+set PATH=c:\Python%PyV%\Scripts;%ORIG_PATH%
+c:\Python%PyV%\python.exe mk_wheel.py %WIN_COMMON_FLAGS% -DPYTHON_INCLUDE="/I c:/Python%PyV%/include/" -DPYTHON_LIBRARIES="c:/Python%PyV%/libs/python%PyV%.lib"
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 echo Building R-package
 
 cd ..\..
@@ -96,4 +102,15 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 
 c:\Python27\python.exe ..\tools\build_native_for_maven.py . catboost4j-prediction --build release --no-src-links^
  -DOS_SDK=local -DHAVE_CUDA=no -DUSE_SYSTEM_JDK=%JAVA_HOME% -DJAVA_HOME=%JAVA_HOME%
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+cd ..\..\..
+
+
+echo Building Spark native shared library
+
+cd catboost\spark\catboost4j-spark\core
+
+c:\Python27\python.exe  ..\..\..\jvm-packages\tools\build_native_for_maven.py . catboost4j-spark-impl --build release --no-src-links^
+ -DOS_SDK=local -DHAVE_CUDA=no -DUSE_LOCAL_SWIG=yes -DUSE_SYSTEM_JDK=%JAVA_HOME% -DJAVA_HOME=%JAVA_HOME%
 if %errorlevel% neq 0 exit /b %errorlevel%

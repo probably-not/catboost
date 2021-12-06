@@ -7160,6 +7160,9 @@ error:
 #endif /* HAVE_PTY_H */
 #ifdef HAVE_STROPTS_H
 #include <stropts.h>
+#else
+    #define __SID  ('S' << 8)
+    #define I_PUSH (__SID | 2)
 #endif
 #endif /* defined(HAVE_OPENPTY) || defined(HAVE_FORKPTY) || defined(HAVE_DEV_PTMX) */
 
@@ -10059,9 +10062,11 @@ os_isatty_impl(PyObject *module, int fd)
 /*[clinic end generated code: output=6a48c8b4e644ca00 input=08ce94aa1eaf7b5e]*/
 {
     int return_value;
+    Py_BEGIN_ALLOW_THREADS
     _Py_BEGIN_SUPPRESS_IPH
     return_value = isatty(fd);
     _Py_END_SUPPRESS_IPH
+    Py_END_ALLOW_THREADS
     return return_value;
 }
 

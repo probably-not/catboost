@@ -82,6 +82,8 @@ static TDataProviders LoadPools(
         objectsOrder,
         /*readTestData*/true,
         TDatasetSubset::MakeColumns(),
+        TVector<TDatasetSubset>(poolLoadParams.TestSetPaths.size(), TDatasetSubset::MakeColumns()),
+        catBoostOptions.DataProcessingOptions->ForceUnitAutoPairWeights,
         &classLabels,
         executor,
         /*profile*/nullptr
@@ -152,14 +154,18 @@ int mode_select_features(int argc, const char* argv[]) {
         &executor
     );
 
+    TVector<TEvalResult> evalResults(pools.Test.size());
 
     const TFeaturesSelectionSummary summary = SelectFeatures(
         catBoostOptions,
         outputOptions,
         &poolLoadParams,
         featuresSelectOptions,
+        /*evalMetricDescriptor*/ Nothing(),
         pools,
         /*dstModel*/ nullptr,
+        /*evalResults*/ GetMutablePointers(evalResults),
+        /*metricsAndTimeHistory*/ nullptr,
         &executor
     );
     SaveSummaryToFile(summary, featuresSelectOptions.ResultPath);

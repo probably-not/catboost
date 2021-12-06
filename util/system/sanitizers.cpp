@@ -3,19 +3,19 @@
 
 #if defined(_asan_enabled_)
 extern "C" {
-void __sanitizer_start_switch_fiber(void** fake_stack_save, const void* bottom, size_t size);
-void __sanitizer_finish_switch_fiber(void* fake_stack_save, const void** old_bottom, size_t* old_size);
+    void __sanitizer_start_switch_fiber(void** fake_stack_save, const void* bottom, size_t size);
+    void __sanitizer_finish_switch_fiber(void* fake_stack_save, const void** old_bottom, size_t* old_size);
 }
 #endif
 
 #if defined(_tsan_enabled_)
     #if defined(__clang_major__) && (__clang_major__ >= 9)
 extern "C" {
-void* __tsan_get_current_fiber(void);
-void* __tsan_create_fiber(unsigned flags);
-void __tsan_destroy_fiber(void* fiber);
-void __tsan_switch_to_fiber(void* fiber, unsigned flags);
-void __tsan_set_fiber_name(void* fiber, const char* name);
+    void* __tsan_get_current_fiber(void);
+    void* __tsan_create_fiber(unsigned flags);
+    void __tsan_destroy_fiber(void* fiber);
+    void __tsan_switch_to_fiber(void* fiber, unsigned flags);
+    void __tsan_set_fiber_name(void* fiber, const char* name);
 }
     #else
 namespace {
@@ -123,3 +123,20 @@ void TFiberContext::AfterStart() noexcept {
     __sanitizer_finish_switch_fiber(nullptr, nullptr, nullptr);
 #endif
 }
+
+#if defined(_tsan_enabled_)
+extern "C" {
+    // This function should not be directly exposed in headers
+    // due to signature variations among contrib headers.
+    void AnnotateBenignRaceSized(const char* file, int line,
+                                 const volatile void* address,
+                                 size_t size,
+                                 const char* description);
+}
+void NSan::AnnotateBenignRaceSized(const char* file, int line,
+                                   const volatile void* address,
+                                   size_t size,
+                                   const char* description) noexcept {
+    ::AnnotateBenignRaceSized(file, line, address, size, description);
+}
+#endif
